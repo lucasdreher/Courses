@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-do list</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="project1.css">
+</head>
+
+<body>
+  <div id="top-content">
+    <nav>
+      <div class="container">
+        <h1 class="logo">
+          <span>To</span>do
+        </h1>
+        <div class="scope">
+          <span class="user">fName l.</span>
+          <span id="breadcrumb-lists" class="breadcrumb-item">All Lists</span>
+          <span id="breadcrumb-lists" class="breadcrumb-item breadcrumb-active">List Name</span>
+        </div>
+        <div class="button-wrapper log">
+          <button id="btn-account-settings" class="btn-small">Account Settings</button>
+          <button id="btn-log-out" class="btn-small">Log Out</button>
+        </div>
+      </div>
+      <div id="message"></div>
+    </nav>
+    <header class="page-header">
+      <div class="container  container-small">
+        <div class="page-header-bg"></div>
+        <h2>Dashboard</h2>
+        <div class="controllers">
+          <button id="btn-new-list">New List</button>
+        </div>
+      </div>
+    </header>
+  </div>
+  <div id="main-content">
+    <section class="lists">
+      <div class="container container-small">
+        <ul class="lists">
+          <li class="list">
+            <div class="list-item-box"></div> List Name
+          </li>
+          <li class="list">List Name</li>
+          <li class="list">List Name</li>
+          <li class="list">List Name</li>
+          <li class="list">List Name</li>
+        </ul>
+      </div>
+    </section>
+    <div class="empty-message container container-small">
+      No list yet. Create a new to-do list clicking on the <strong><em>New List</em></strong> button.
+    </div>
+  </div>
+  <!-- <script src="project1.js"></script> -->
+</body>
+
+</html>

@@ -1,0 +1,149 @@
+/* Homework Assignment #8: Events */
+
+body {
+  background: #457b9d;
+  color: #1d3557;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  min-height: 100vh;
+}
+
+.display-none {
+  display: none!important;
+}
+
+.opacity-0 {
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
+.content-center, .area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#board {
+  background-color: #1d3557;
+  width: 40vw;
+  height: 40vw;
+  min-height: 400px;
+  min-width: 400px;
+  border-radius: 5%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: space-between;
+  overflow: hidden;
+  margin: 30px;
+}
+
+.area {
+  width: 33%;
+  height: 33%;
+  background-color: #f1faee;
+  display: flex;
+  transition: background-color 200ms ease-in-out;
+  transition: color 200ms ease-in-out;
+  color: #f1faee;
+}
+
+.area:hover {
+  cursor: pointer;
+  background-color: #a8dadc;
+}
+
+.o {
+  color: #1d3557;
+}
+
+.x {
+  color: #e63946;
+}
+
+.area.x, .area.o {
+  cursor: not-allowed;
+  background-color: #457b9d;
+}
+
+.area.won {
+  background-color: #e63946;
+  color: #f1faee;
+}
+
+.o::before {
+  content: '\25CB';
+  font-size: 12vw;
+  position: relative;
+  top: -4%;
+}
+
+.x::before {
+  content: '\2715';
+  font-size: 8vw;
+}
+
+#modal-wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(69, 123, 157, 0.7);
+}
+
+.blur-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.modal-box {
+  background-color: #f1faee;
+  padding: 0 120px 0 60px;
+  border-radius: 15px;
+  border: 0;
+  position: relative;
+  border: 2px solid #1d3557;
+  font-size: 20px;
+  overflow: hidden;
+}
+
+.button-reset {
+  border: 0;
+  border-left: 2px solid #1d3557;
+  color: #f1faee;
+  background-color: #1d3557;
+  font-size: 30px;
+  transition: background-color 300ms ease-in-out;
+}
+
+.modal-box .button-reset {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 60px;
+}
+
+.button-reset:hover {
+  background-color: #e63946;
+}
+
+.modal-box .o::before {
+  font-size: 5em;
+  margin-right: 10px;
+  top: -6px;
+}
+
+.modal-box .x::before {
+  font-size: 3.5em;
+  margin-right: 10px;
+}
