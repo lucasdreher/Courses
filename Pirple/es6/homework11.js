@@ -16,15 +16,26 @@ When called successfully, the function:
 */
 
 function reverseJsonArray(array) {
-	array = JSON.parse(array);
-	console.log(array);
-	array.reverse();
-	console.log(array);
+	try {
+		array = JSON.parse(array);
+		array.reverse();
+	} catch (e) {
+		if (typeof array == 'undefined') {
+			console.log('SyntaxError: Your Argument is Undefined, please insert a Array');
+		} else if (typeof array == 'boolean') {
+			console.log('TypeError: Your Argument is a Boolean and must be a Array');
+		} else {
+			console.log(e);
+		}
+		return false;
+	}
+
 	return JSON.stringify(array);
 }
-temp = '["a","b","c"]';
 
-console.log(typeof temp);
+//Try something
 
 console.log(reverseJsonArray('["a","b","c"]'));
-// console.log(reverseJsonArray(true));
+console.log(reverseJsonArray());
+console.log(reverseJsonArray(true));
+console.log(reverseJsonArray('abc'));
