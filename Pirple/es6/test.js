@@ -244,3 +244,40 @@
 // for (const { name: n, address: a, other: { cell: c, email: e } } of entries) {
 // 	console.log(`Name: ${n}\nAddress: ${a}\nCellphone: ${c}\nEmail: ${e}`);
 // }
+
+// export function find_total(my_numbers) {
+// 	let total = 0;
+// 	my_numbers.forEach((e) => {
+// 		if (e === 5) {
+// 			total += 5;
+// 		} else if (e % 2 === 0) {
+// 			total++;
+// 		} else {
+// 			total += 3;
+// 		}
+// 	});
+// 	return total;
+// }
+
+// let total = 0;
+// my_numbers.forEach((e) => {
+//   if (e >= 111) {
+//     return 0;
+//   } else if (e % 11 === 0) {
+//     total++;
+//   }
+// });
+// return total;
+
+// <?php function find_total( $my_numbers ) {
+//   $total = 0;
+//   for ($key = 0; $key < count($my_numbers); $key++) {
+//     if ($my_numbers[$key] % 2 == 0) {
+//       $total += $my_numbers[$key];
+//     } else {
+//       $total -= $my_numbers[$key];
+//     }
+//   }
+//   return $total;
+// }
+//  ?>
