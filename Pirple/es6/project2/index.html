@@ -20,9 +20,14 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>A Study in 3D Rotations| by Henrik Ingo @henrikingo</title>
-    <meta name="description" content="Explore impress.js in 3D" />
-    <meta name="author" content="Henrik Ingo" />
+    <title>Presentation about React JS | Project #2</title>
+    <meta name="description" content="Explore React JS" />
+    <meta name="author" content="Lucas Dreher" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+        rel="stylesheet">
     <link href="css/impress-common.css" rel="stylesheet" />
     <link href="css/react-presentation.css" rel="stylesheet" />
 </head>
@@ -37,59 +42,142 @@
     <div id="impress" data-transition-duration="2000">
 
 
-        <div id="overview" class="step overview" data-x="1350" data-y="100" data-z="100" data-scale="3"
+        <div id="overview" class="step overview" data-x="1350" data-y="100" data-z="100" data-scale="2"
             data-rotate-y="90">
-            <h1>A Study in 3D Rotations</h1>
-        </div>
-        <div id="overview2" class="step overview" data-x="2018" data-y="106" data-z="3018" data-scale="2">
-            <p>Unlike the <code>x/y/z</code> coordinates (aka translations), the <code>rotate-x/y/z</code> rotations are
-                applied in a
-                specific order, and order matters. This demo presentation exhibits the use of the new
-                <code>data-rotate- order</code> attribute.
-                Instead of the default "xyz" order, the steps use the reversed <em>"zyx"</em> order in applying
-                rotations around each axis.
-                Some of the steps (<a href="#step-3">3</a> &amp; <a href="#step-7">7</a>), are in positions that are not
-                possible with the default "xyz" order.
+            <p>
+                The power and appeal of javascript comes largely from it's ecosystem. That is: <strong>the
+                    libraries</strong>, frameworks, and tools that have been built in Javascript (or
+                built to make Javascript coding easier). For this project, we are going to do a <strong><em>"deep
+                        dive"</em></strong> on one of the popular
+                Javascript libraries, <strong>React</strong>.
             </p>
+        </div>
+        <div id="title" class="step overview" data-x="2018" data-y="106" data-z="3018" data-scale="3">
+            <div class="logo"><img
+                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0xMS41IC0xMC4yMzE3NCAyMyAyMC40NjM0OCI+CiAgPHRpdGxlPlJlYWN0IExvZ288L3RpdGxlPgogIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSIyLjA1IiBmaWxsPSIjNjFkYWZiIi8+CiAgPGcgc3Ryb2tlPSIjNjFkYWZiIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiPgogICAgPGVsbGlwc2Ugcng9IjExIiByeT0iNC4yIi8+CiAgICA8ZWxsaXBzZSByeD0iMTEiIHJ5PSI0LjIiIHRyYW5zZm9ybT0icm90YXRlKDYwKSIvPgogICAgPGVsbGlwc2Ugcng9IjExIiByeT0iNC4yIiB0cmFuc2Zvcm09InJvdGF0ZSgxMjApIi8+CiAgPC9nPgo8L3N2Zz4K"
+                    alt="React Logo">
+                <h1 class="title">React</h1>
+            </div>
+            <div class="footnote">A JavaScript library for building user interfaces</div>
         </div>
 
         <div id="step-1" class="step" data-x="0" data-y="0" data-z="0" data-goto-prev="step-8">
-            <p>Slide one</p>
+            <h2>Declarative</h2>
+            <p>
+                React makes it painless to create interactive UIs. Design simple views for each state in your
+                application, and React will efficiently update and render just the right components when your data
+                changes.
+            </p>
+            <p>
+                Declarative views make your code more predictable and easier to debug.
+            </p>
         </div>
 
         <div id="step-2" class="step" data-x="420" data-y="-70" data-z="-250" data-rotate-z="45" data-rotate-y="-45"
             data-rotate-order="zyx">
-            <p>Slide two</p>
+            <h2>Component-Based</h2>
+            <p>
+                Build encapsulated components that manage their own state, then compose them to make complex UIs.
+            </p>
+            <p>
+                Since component logic is written in JavaScript instead of templates, you can easily pass rich data
+                through your app and keep state out of the DOM.
+            </p>
         </div>
 
         <div id="step-3" class="step" data-x="700" data-y="350" data-z="-350" data-rotate-z="90" data-rotate-y="-90"
             data-rotate-order="zyx">
-            <p>Slide three</p>
+            <h2>Learn Once, Write Anywhere</h2>
+            <p>
+                We don’t make assumptions about the rest of your technology stack, so you can develop new features in
+                React without rewriting existing code.
+            </p>
+            <p>React can also render on the server using Node and power mobile apps using <a
+                    href="https://reactnative.dev/" target="_blank">React Native</a>.</p>
         </div>
 
-        <div id="step-4" class="step" data-x="422" data-y="780" data-z="-250" data-rotate-z="135" data-rotate-y="-135"
-            data-rotate-order="zyx">
-            <p>Slide four</p>
+        <div id="step-4" class="step with-code" data-x="422" data-y="780" data-z="-250" data-rotate-z="135"
+            data-rotate-y="-135" data-rotate-order="zyx">
+            <div class="content-right">
+                <h2>A Simple Component</h2>
+                <p>
+                    React components implement a <code>render()</code> method that takes input data and returns what to
+                    display. This example uses an XML-like syntax called JSX. Input data that is passed into the
+                    component
+                    can be accessed by <code>render()</code> via <code>this.props</code>.
+                </p>
+                <p>
+                    Declarative views make your code more predictable and easier to debug.
+                </p>
+            </div>
+            <div class="content-left">
+                <div class="code">
+                    <img src="img/a-simple-component.png" alt="a simple component">
+                </div>
+            </div>
         </div>
 
-        <div id="step-5" class="step" data-x="0" data-y="702" data-z="0" data-rotate-z="180" data-rotate-y="-180"
-            data-rotate-order="zyx">
-            <p>Slide five</p>
+        <div id="step-5" class="step with-code" data-x="0" data-y="702" data-z="0" data-rotate-z="180"
+            data-rotate-y="-180" data-rotate-order="zyx">
+            <div class="content-right">
+                <h2>A Stateful Component</h2>
+                <p>
+                    In addition to taking input data (accessed via <code>this.props</code>), a component can maintain
+                    internal state data (accessed via <code>this.state</code>). When a component’s state data changes,
+                    the rendered markup will be updated by re-invoking <code>render()</code>.
+                </p>
+            </div>
+            <div class="content-left">
+                <div class="code">
+                    <img src="img/a-stateful-component.png" alt="a stateful component">
+                </div>
+            </div>
         </div>
 
-        <div id="step-6" class="step" data-x="379" data-y="780" data-z="270" data-rotate-z="135" data-rotate-y="-225"
-            data-rotate-order="zyx">
-            <p>Slide six</p>
+        <div id="step-6" class="step with-code" data-x="379" data-y="780" data-z="270" data-rotate-z="135"
+            data-rotate-y="-225" data-rotate-order="zyx">
+            <div class="content-right">
+                <h2>An Application</h2>
+                <p>
+                    Using <code>props</code> and <code>state</code>, we can put together a small Todo application. This
+                    example uses <code>state</code> to track the current list of items as well as the text that the user
+                    has entered. Although event handlers appear to be rendered inline, they will be collected and
+                    implemented using event delegation.
+                </p>
+            </div>
+            <div class="content-left">
+                <div class="code">
+                    <img src="img/an-application.png" alt="an application">
+                </div>
+            </div>
         </div>
 
-        <div id="step-7" class="step" data-x="700" data-y="350" data-z="350" data-rotate-z="90" data-rotate-y="-270"
-            data-rotate-order="zyx">
-            <p>Slide seven</p>
+        <div id="step-7" class="step with-code" data-x="700" data-y="350" data-z="350" data-rotate-z="90"
+            data-rotate-y="-270" data-rotate-order="zyx">
+            <div class="content-right">
+                <h2>A Component Using External Plugins</h2>
+                <p>
+                    React allows you to interface with other libraries and frameworks. This example uses
+                    <strong>remarkable</strong>, an external Markdown library, to convert the
+                    <code>&lt;textarea&gt;</code>’s value in real time.
+                </p>
+            </div>
+            <div class="content-left">
+                <div class="code">
+                    <img src="img/a-component-using-external-plugins.png" alt="a stateful component">
+                </div>
+            </div>
         </div>
 
         <div id="step-8" class="step" data-x="379" data-y="-70" data-z="270" data-rotate-z="45" data-rotate-y="-315"
             data-rotate-order="zyx" data-goto-next="step-1">
-            <p>Slide eight</p>
+            <h2>More Information</h2>
+            <p class="more-info">
+                <a href="https://reactjs.org/docs/getting-started.html" target="_blank">Get Started</a>
+                <a href="https://reactjs.org/tutorial/tutorial.html" target="_blank">Take the Tutorial</a>
+                <a href="https://reactjs.org/blog" target="_blank">Blog</a>
+                <a href="https://reactjs.org/community/support.html" target="_blank">Community</a>
+            </p>
         </div>
     </div>
 
