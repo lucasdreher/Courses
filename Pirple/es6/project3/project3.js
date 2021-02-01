@@ -173,7 +173,6 @@ class Building {
 		// Check that the elevator has reached its final destination.
 		if (elevator.floor === elevator.destination) {
 			// Stop the elevator
-			console.log(`[LOG]: Elevator ${elevator.id} stopped on floor ${elevator.floor}`);
 			elevator.isMoving = false;
 			elevator.direction = null;
 		}
