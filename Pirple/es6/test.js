@@ -281,3 +281,218 @@
 //   return $total;
 // }
 //  ?>
+
+// // Object-oriented Javascript Part 1
+// const myString = 'hello';
+// // console.log(myString);
+
+// const myObj = {
+// 	a: 1,
+// 	b: 2
+// };
+// console.log(myObj.hasOwnProperty('valueOf'));
+
+// console.log(Array.prototype);
+
+// Object-oriented Javascript Part 2: Classes
+
+/*
+Classes in ES6 are just syntatical sugar over JavaScript's
+existing prototype-based inheritance
+Simple, clean syntax to create objects and take care of inheritance
+*/
+
+// Pre_ES6 way:
+
+/*
+function Person (name, age) {
+  this.name = name;
+  this.age = age;
+}
+
+Person.prototype.greetings = function() {
+  console.log('Greetengs :D')
+}
+
+function Employee(name, age, role) {
+  Person.call(this, name, age);
+  this.role = role;
+}
+
+Employee.prototype = Object.create(Person.prototype);
+Employee.prototype.constructor = Employee;
+
+const bill = new Employee('Bill', 40, 'janitor');
+bill.greetings();
+*/
+
+// =======================================================================
+// //Classes
+// //Classes are NOT hoisted
+// //Class method:
+
+// class Person {
+//   constructor(name,age) {
+//     this.name = name;
+//     this.age = age;
+//   }
+//   greetings() {
+//     return 'Classes R kewl!';
+//   }
+// }
+
+// // const bob = new Person('Bob', 30);
+
+// // bob.greetings();
+
+// // Person.prototype.greetings = function() {
+// //   return 'Now I say something else.';
+// // }
+
+// class Employee extends Person {
+//   constructor(name, age, position) {
+//     super(name, age); //Super: use it before "this"
+//     this.position = position;
+//   }
+//   sayGreetings() {
+//     const parentString = super.greetings();
+//     console.log(`${this.name} thinks ${parentString}`);
+//     console.log('works');
+//   }
+// }
+
+// // const barb = new Employee('Barb', 27, 'developer');
+
+// // console.log(barb);
+// // barb.sayGreetings();
+
+// class Customer extends Person {
+//   constructor({name='customer', age='n/a', contactMethod}){
+//     super(name,age);
+//     this.contactMethod = contactMethod;
+//     this.accountCredit = null;
+//   }
+//   addCredit(amount) {
+//     this.accountCredit += amount;
+//   }
+//   reduceCredit(amount) {
+//     this.accountCredit -= amount;
+//   }
+//   static sayCustomerNames (...customers) {
+//     for (const c of customers) {
+//       console.log(c.name);
+//     }
+//   }
+// }
+
+// const customer1 = new Customer({name:'Lucas D.', contactMethod: 'email'});
+// const customer2 = new Customer({name:'Faby G.', contactMethod: 'email'});
+// const customer3 = new Customer({name:'Val L.', contactMethod: 'email'});
+
+// console.log(customer1);
+// customer1.addCredit(100);
+// console.log(customer1.accountCredit);
+// customer1.reduceCredit(50);
+// console.log(customer1.accountCredit);
+
+// Customer.sayCustomerNames(customer1, customer2, customer3);
+
+// =======================================================================
+// Callbacks and Promises
+// A way to write asynchronous Javascript
+
+// Callback
+//Parent function
+function sumUpNumbers(num1, num2, cb) {
+	let summedValue;
+	setTimeout(() => {
+		summedValue = num1 + num2;
+		if (cb) {
+			cb(summedValue);
+		}
+	}, 1000);
+}
+
+//Callback function
+function logSummedValue(val) {
+	console.log(`The summed total is: ${val}`);
+}
+
+// sumUpNumbers(100, 150, logSummedValue);
+
+// Promises
+
+function numAdder(n1, n2) {
+	return new Promise((resolve, reject) => {
+		const addedNums = n1 + n2;
+		setTimeout(() => {
+			resolve(addedNums);
+		}, 500);
+	});
+}
+
+function numSquarer(num) {
+	return new Promise((resolve, reject) => {
+		if (Math.random() > 0.5) {
+			reject('reject 50% of the time');
+		}
+		setTimeout(() => {
+			resolve(num * num);
+		}, 800);
+	});
+}
+
+// //less clear
+// numAdder(10, 10)
+// 	.then((data) => {
+// 		return numSquarer(data); //'return' pass the data forward because os the {}
+// 	})
+// 	.then((moreData) => {
+// 		console.log(moreData);
+// 	});
+
+//more clear without {}
+numAdder(10, 10)
+	.then((data) => numSquarer(data))
+	.then((moreData) => console.log(moreData))
+	.catch((err) => console.log(err));
+
+Promise.reject()
+	.then(
+		(res) => {
+			console.log('success msg'); //first always resolve
+		},
+		(err) => {
+			console.log('error msg'); // second always reject
+		}
+	)
+	.catch((data) => console.log(`catch error msg ${data}`));
+
+function timeLogger(message, time) {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve(message);
+		}, time);
+		if (typeof message !== 'string' || typeof time !== 'number') {
+			reject();
+		}
+	});
+}
+
+timeLogger('first', 1000)
+	.then((message) => {
+		console.log(message);
+		return timeLogger('second', 800);
+	})
+	.then((message) => {
+		console.log(message);
+		return timeLogger('third', 100);
+	})
+	.then((message) => {
+		console.log(message);
+		return timeLogger('fourth', 300);
+	})
+	.then((message) => {
+		console.log(message);
+	})
+	.catch((err) => console.log('incorrect input'));
