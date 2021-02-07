@@ -1,0 +1,11 @@
+body {
+  background-color: aliceblue;
+}
+
+.selected-planet {
+  background-color: lightsalmon;
+}
+
+.highlight {
+  background-color: gold;
+}
