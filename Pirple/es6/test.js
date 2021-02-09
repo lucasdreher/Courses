@@ -506,117 +506,117 @@ expect multiple arguments, multiple elements,
 or multiple variables
 */
 
-function spreadFunction(...multipleArgs) {
-	console.log(multipleArgs);
-}
+// function spreadFunction(...multipleArgs) {
+// 	console.log(multipleArgs);
+// }
 
-// spreadFunction(1, 20, false, 'hi', 'hey');
-const myArray = [ 1, 2, 3, 4 ];
-const mySecondArray = [ 5, 6, 7, 8, 9 ];
-const myThirdArray = [ ...myArray, ...mySecondArray ];
-// console.log(...myArray);
-// console.log(myThirdArray);
+// // spreadFunction(1, 20, false, 'hi', 'hey');
+// const myArray = [ 1, 2, 3, 4 ];
+// const mySecondArray = [ 5, 6, 7, 8, 9 ];
+// const myThirdArray = [ ...myArray, ...mySecondArray ];
+// // console.log(...myArray);
+// // console.log(myThirdArray);
 
-function sayHello(x, y, z) {
-	console.log(`Hello, ${x}, ${y}, ${z}`);
-}
-const helloArray = [ 'Bob', 'Jane', 'Peter' ];
+// function sayHello(x, y, z) {
+// 	console.log(`Hello, ${x}, ${y}, ${z}`);
+// }
+// const helloArray = [ 'Bob', 'Jane', 'Peter' ];
 
-//Alternative to Function.prototype.apply
-// sayHello.apply(null, helloArray);
+// //Alternative to Function.prototype.apply
+// // sayHello.apply(null, helloArray);
 
-// Spread syntax way:
+// // Spread syntax way:
 
-// sayHello(...helloArray);
+// // sayHello(...helloArray);
 
-const arr1 = [ 10, 20, 30 ];
-const arr2 = [ 40, 50, 60 ];
-arr1.push.apply(arr1, arr2);
-// console.log(arr1);
+// const arr1 = [ 10, 20, 30 ];
+// const arr2 = [ 40, 50, 60 ];
+// arr1.push.apply(arr1, arr2);
+// // console.log(arr1);
 
-const arr3 = [ 100, 200, 300 ];
-const arr4 = [ 400, 500, 600 ];
-arr3.push(...arr4);
-// console.log(arr3);
+// const arr3 = [ 100, 200, 300 ];
+// const arr4 = [ 400, 500, 600 ];
+// arr3.push(...arr4);
+// // console.log(arr3);
 
-// ==========  concat()
+// // ==========  concat()
 
-const myArr = [ 'jelly beans', 'cake' ];
-const myArr2 = [ 'donuts', 'chocolate' ];
-const myArr3 = [ 'pie', 'lemonade' ];
-// const myNewArr = myArr.concat(myArr2, myArr3);
-const myNewArr = [ ...myArr, ...myArr2, ...myArr3 ];
-// console.log(myNewArr);
+// const myArr = [ 'jelly beans', 'cake' ];
+// const myArr2 = [ 'donuts', 'chocolate' ];
+// const myArr3 = [ 'pie', 'lemonade' ];
+// // const myNewArr = myArr.concat(myArr2, myArr3);
+// const myNewArr = [ ...myArr, ...myArr2, ...myArr3 ];
+// // console.log(myNewArr);
 
-const listOfCarParts = [ 'gasket', 'tires', 'radiator', 'muffler' ];
-const listOfPartsToInsert = [ 'wipers', 'headlights' ];
-// const manualAssembledArray = [ 'gasket', ...listOfPartsToInsert, 'tires', 'radiator', 'muffler' ];
+// const listOfCarParts = [ 'gasket', 'tires', 'radiator', 'muffler' ];
+// const listOfPartsToInsert = [ 'wipers', 'headlights' ];
+// // const manualAssembledArray = [ 'gasket', ...listOfPartsToInsert, 'tires', 'radiator', 'muffler' ];
 
-// console.log(manualAssembledArray);
+// // console.log(manualAssembledArray);
 
-function listInserter(arr1, arr2, index) {
-	const firstPartOfArray = arr1.slice(0, index);
-	const secondPartOfArray = arr1.slice(index);
-	// const assembledArray = firstPartOfArray.concat(arr2, secondPartOfArray);
-	const assembledArray = [ ...firstPartOfArray, ...arr2, ...secondPartOfArray ];
-	console.log(assembledArray);
-}
+// function listInserter(arr1, arr2, index) {
+// 	const firstPartOfArray = arr1.slice(0, index);
+// 	const secondPartOfArray = arr1.slice(index);
+// 	// const assembledArray = firstPartOfArray.concat(arr2, secondPartOfArray);
+// 	const assembledArray = [ ...firstPartOfArray, ...arr2, ...secondPartOfArray ];
+// 	console.log(assembledArray);
+// }
 
-// listInserter(listOfCarParts, listOfPartsToInsert, 1);
+// // listInserter(listOfCarParts, listOfPartsToInsert, 1);
 
-const anotherArr = [ 10, 12, 12009, 12223 ];
-const yetAnotherArr = [ ...anotherArr ];
-const andYetAnotherArr = yetAnotherArr.slice();
-yetAnotherArr.push(2123141);
-// console.log(yetAnotherArr);
-// console.log(andYetAnotherArr);
+// const anotherArr = [ 10, 12, 12009, 12223 ];
+// const yetAnotherArr = [ ...anotherArr ];
+// const andYetAnotherArr = yetAnotherArr.slice();
+// yetAnotherArr.push(2123141);
+// // console.log(yetAnotherArr);
+// // console.log(andYetAnotherArr);
 
-// ========== vs rest operator
-function hasManyArgs(x, y, ...restOfArgs) {
-	console.log(x, y);
-	for (const prop of restOfArgs) {
-		console.log(prop + 10);
-	}
-}
+// // ========== vs rest operator
+// function hasManyArgs(x, y, ...restOfArgs) {
+// 	console.log(x, y);
+// 	for (const prop of restOfArgs) {
+// 		console.log(prop + 10);
+// 	}
+// }
 
-// hasManyArgs('hi', 'hello', 10, 20, 68, 100);
+// // hasManyArgs('hi', 'hello', 10, 20, 68, 100);
 
-// =======Method definitions
-// Pre-ES6, in object literals, methods are defined as function expressions
-// Eg.
-const myObj = {
-	id: 10,
-	sayHi: function() {
-		console.log('hi');
-	}
-};
+// // =======Method definitions
+// // Pre-ES6, in object literals, methods are defined as function expressions
+// // Eg.
+// const myObj = {
+// 	id: 10,
+// 	sayHi: function() {
+// 		console.log('hi');
+// 	}
+// };
 
-// myObj.sayHi();
+// // myObj.sayHi();
 
-// ES6 has method definitions for creating methods
+// // ES6 has method definitions for creating methods
 
-const myES6Obj = {
-	id: 11,
-	sayHi() {
-		console.log('ES6 is cool');
-	},
-	sayBye() {
-		console.log('Bye now!');
-	}
-};
+// const myES6Obj = {
+// 	id: 11,
+// 	sayHi() {
+// 		console.log('ES6 is cool');
+// 	},
+// 	sayBye() {
+// 		console.log('Bye now!');
+// 	}
+// };
 
-// myES6Obj.sayHi();
-// myES6Obj.sayBye();
+// // myES6Obj.sayHi();
+// // myES6Obj.sayBye();
 
-const anotherObj = {
-	greet(arg1) {
-		console.log(`Hey! ${arg1}`);
-	},
-	anotherMethod(...args) {
-		this.greet(args[0]);
-		console.log(`I have ${args.length} arguments!`);
-	}
-};
+// const anotherObj = {
+// 	greet(arg1) {
+// 		console.log(`Hey! ${arg1}`);
+// 	},
+// 	anotherMethod(...args) {
+// 		this.greet(args[0]);
+// 		console.log(`I have ${args.length} arguments!`);
+// 	}
+// };
 
-anotherObj.greet('Jim');
-anotherObj.anotherMethod('Tim', 1, false, true, [ 123 ], 6);
+// anotherObj.greet('Jim');
+// anotherObj.anotherMethod('Tim', 1, false, true, [ 123 ], 6);
