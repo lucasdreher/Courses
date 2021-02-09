@@ -397,102 +397,226 @@ bill.greetings();
 
 // Customer.sayCustomerNames(customer1, customer2, customer3);
 
-// =======================================================================
-// Callbacks and Promises
-// A way to write asynchronous Javascript
+// // =======================================================================
+// // Callbacks and Promises
+// // A way to write asynchronous Javascript
 
-// Callback
-//Parent function
-function sumUpNumbers(num1, num2, cb) {
-	let summedValue;
-	setTimeout(() => {
-		summedValue = num1 + num2;
-		if (cb) {
-			cb(summedValue);
-		}
-	}, 1000);
-}
+// // Callback
+// //Parent function
+// function sumUpNumbers(num1, num2, cb) {
+// 	let summedValue;
+// 	setTimeout(() => {
+// 		summedValue = num1 + num2;
+// 		if (cb) {
+// 			cb(summedValue);
+// 		}
+// 	}, 1000);
+// }
 
-//Callback function
-function logSummedValue(val) {
-	console.log(`The summed total is: ${val}`);
-}
+// //Callback function
+// function logSummedValue(val) {
+// 	console.log(`The summed total is: ${val}`);
+// }
 
-// sumUpNumbers(100, 150, logSummedValue);
+// // sumUpNumbers(100, 150, logSummedValue);
 
-// Promises
+// // Promises
 
-function numAdder(n1, n2) {
-	return new Promise((resolve, reject) => {
-		const addedNums = n1 + n2;
-		setTimeout(() => {
-			resolve(addedNums);
-		}, 500);
-	});
-}
-
-function numSquarer(num) {
-	return new Promise((resolve, reject) => {
-		if (Math.random() > 0.5) {
-			reject('reject 50% of the time');
-		}
-		setTimeout(() => {
-			resolve(num * num);
-		}, 800);
-	});
-}
-
-// //less clear
-// numAdder(10, 10)
-// 	.then((data) => {
-// 		return numSquarer(data); //'return' pass the data forward because os the {}
-// 	})
-// 	.then((moreData) => {
-// 		console.log(moreData);
+// function numAdder(n1, n2) {
+// 	return new Promise((resolve, reject) => {
+// 		const addedNums = n1 + n2;
+// 		setTimeout(() => {
+// 			resolve(addedNums);
+// 		}, 500);
 // 	});
+// }
 
-//more clear without {}
-numAdder(10, 10)
-	.then((data) => numSquarer(data))
-	.then((moreData) => console.log(moreData))
-	.catch((err) => console.log(err));
+// function numSquarer(num) {
+// 	return new Promise((resolve, reject) => {
+// 		if (Math.random() > 0.5) {
+// 			reject('reject 50% of the time');
+// 		}
+// 		setTimeout(() => {
+// 			resolve(num * num);
+// 		}, 800);
+// 	});
+// }
 
-Promise.reject()
-	.then(
-		(res) => {
-			console.log('success msg'); //first always resolve
-		},
-		(err) => {
-			console.log('error msg'); // second always reject
-		}
-	)
-	.catch((data) => console.log(`catch error msg ${data}`));
+// // //less clear
+// // numAdder(10, 10)
+// // 	.then((data) => {
+// // 		return numSquarer(data); //'return' pass the data forward because os the {}
+// // 	})
+// // 	.then((moreData) => {
+// // 		console.log(moreData);
+// // 	});
 
-function timeLogger(message, time) {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve(message);
-		}, time);
-		if (typeof message !== 'string' || typeof time !== 'number') {
-			reject();
-		}
-	});
+// //more clear without {}
+// numAdder(10, 10)
+// 	.then((data) => numSquarer(data))
+// 	.then((moreData) => console.log(moreData))
+// 	.catch((err) => console.log(err));
+
+// Promise.reject()
+// 	.then(
+// 		(res) => {
+// 			console.log('success msg'); //first always resolve
+// 		},
+// 		(err) => {
+// 			console.log('error msg'); // second always reject
+// 		}
+// 	)
+// 	.catch((data) => console.log(`catch error msg ${data}`));
+
+// function timeLogger(message, time) {
+// 	return new Promise((resolve, reject) => {
+// 		setTimeout(() => {
+// 			resolve(message);
+// 		}, time);
+// 		if (typeof message !== 'string' || typeof time !== 'number') {
+// 			reject();
+// 		}
+// 	});
+// }
+
+// timeLogger('first', 1000)
+// 	.then((message) => {
+// 		console.log(message);
+// 		return timeLogger('second', 800);
+// 	})
+// 	.then((message) => {
+// 		console.log(message);
+// 		return timeLogger('third', 100);
+// 	})
+// 	.then((message) => {
+// 		console.log(message);
+// 		return timeLogger('fourth', 300);
+// 	})
+// 	.then((message) => {
+// 		console.log(message);
+// 	})
+// 	.catch((err) => console.log('incorrect input'));
+
+// More cool things ES6 features
+
+// Spread Syntax
+/*
+- Can be used in places where (e.g.) functions
+expect multiple arguments, multiple elements,
+or multiple variables
+*/
+
+function spreadFunction(...multipleArgs) {
+	console.log(multipleArgs);
 }
 
-timeLogger('first', 1000)
-	.then((message) => {
-		console.log(message);
-		return timeLogger('second', 800);
-	})
-	.then((message) => {
-		console.log(message);
-		return timeLogger('third', 100);
-	})
-	.then((message) => {
-		console.log(message);
-		return timeLogger('fourth', 300);
-	})
-	.then((message) => {
-		console.log(message);
-	})
-	.catch((err) => console.log('incorrect input'));
+// spreadFunction(1, 20, false, 'hi', 'hey');
+const myArray = [ 1, 2, 3, 4 ];
+const mySecondArray = [ 5, 6, 7, 8, 9 ];
+const myThirdArray = [ ...myArray, ...mySecondArray ];
+// console.log(...myArray);
+// console.log(myThirdArray);
+
+function sayHello(x, y, z) {
+	console.log(`Hello, ${x}, ${y}, ${z}`);
+}
+const helloArray = [ 'Bob', 'Jane', 'Peter' ];
+
+//Alternative to Function.prototype.apply
+// sayHello.apply(null, helloArray);
+
+// Spread syntax way:
+
+// sayHello(...helloArray);
+
+const arr1 = [ 10, 20, 30 ];
+const arr2 = [ 40, 50, 60 ];
+arr1.push.apply(arr1, arr2);
+// console.log(arr1);
+
+const arr3 = [ 100, 200, 300 ];
+const arr4 = [ 400, 500, 600 ];
+arr3.push(...arr4);
+// console.log(arr3);
+
+// ==========  concat()
+
+const myArr = [ 'jelly beans', 'cake' ];
+const myArr2 = [ 'donuts', 'chocolate' ];
+const myArr3 = [ 'pie', 'lemonade' ];
+// const myNewArr = myArr.concat(myArr2, myArr3);
+const myNewArr = [ ...myArr, ...myArr2, ...myArr3 ];
+// console.log(myNewArr);
+
+const listOfCarParts = [ 'gasket', 'tires', 'radiator', 'muffler' ];
+const listOfPartsToInsert = [ 'wipers', 'headlights' ];
+// const manualAssembledArray = [ 'gasket', ...listOfPartsToInsert, 'tires', 'radiator', 'muffler' ];
+
+// console.log(manualAssembledArray);
+
+function listInserter(arr1, arr2, index) {
+	const firstPartOfArray = arr1.slice(0, index);
+	const secondPartOfArray = arr1.slice(index);
+	// const assembledArray = firstPartOfArray.concat(arr2, secondPartOfArray);
+	const assembledArray = [ ...firstPartOfArray, ...arr2, ...secondPartOfArray ];
+	console.log(assembledArray);
+}
+
+// listInserter(listOfCarParts, listOfPartsToInsert, 1);
+
+const anotherArr = [ 10, 12, 12009, 12223 ];
+const yetAnotherArr = [ ...anotherArr ];
+const andYetAnotherArr = yetAnotherArr.slice();
+yetAnotherArr.push(2123141);
+// console.log(yetAnotherArr);
+// console.log(andYetAnotherArr);
+
+// ========== vs rest operator
+function hasManyArgs(x, y, ...restOfArgs) {
+	console.log(x, y);
+	for (const prop of restOfArgs) {
+		console.log(prop + 10);
+	}
+}
+
+// hasManyArgs('hi', 'hello', 10, 20, 68, 100);
+
+// =======Method definitions
+// Pre-ES6, in object literals, methods are defined as function expressions
+// Eg.
+const myObj = {
+	id: 10,
+	sayHi: function() {
+		console.log('hi');
+	}
+};
+
+// myObj.sayHi();
+
+// ES6 has method definitions for creating methods
+
+const myES6Obj = {
+	id: 11,
+	sayHi() {
+		console.log('ES6 is cool');
+	},
+	sayBye() {
+		console.log('Bye now!');
+	}
+};
+
+// myES6Obj.sayHi();
+// myES6Obj.sayBye();
+
+const anotherObj = {
+	greet(arg1) {
+		console.log(`Hey! ${arg1}`);
+	},
+	anotherMethod(...args) {
+		this.greet(args[0]);
+		console.log(`I have ${args.length} arguments!`);
+	}
+};
+
+anotherObj.greet('Jim');
+anotherObj.anotherMethod('Tim', 1, false, true, [ 123 ], 6);
