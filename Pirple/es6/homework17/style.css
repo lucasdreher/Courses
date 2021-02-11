@@ -80,15 +80,20 @@ button:hover {
   background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
   box-shadow: 0 5px 10px rgb(0 0 0 / 20%);
   position: relative;
-  min-width: 400px;
+  min-width: 500px;
 }
 
 .container {
-  display: flex;
   max-width: 1240px;
+  padding: 0 30px;
+  margin: 0 auto;
+}
+
+.main {
+  display: flex;
   min-height: 50vh;
-  margin: 30px auto;
   padding: 30px;
+  margin: 30px auto;
   background-color: #6e91e9;
   background-image: linear-gradient( -45deg, #6e91e9, #70acee);
   box-shadow: 0 5px 10px rgb(0 0 0 / 20%);
@@ -185,4 +190,20 @@ button:hover {
 
 #btnArea button {
   margin-bottom: 15px;
+}
+
+#error {
+  background-color: rgba(158, 12, 33, 1);
+  background-image: linear-gradient( 178.2deg, rgba(118, 8, 23, 1) 10.9%, rgba(158, 12, 33, 1) 62.6%);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: #fff;
+  text-align: center;
+}
+
+#error .container {
+  margin: 5px auto;
+  /* max-width: ; */
 }

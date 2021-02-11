@@ -11,18 +11,17 @@
 
 <body>
   <main>
-    <div class="container">
+    <div class="container main">
       <div class="left">
         <header>
           <div class="wrapper" id="control">
             <h1>The Notifications API</h1>
-
-            <label for="meeting-time">
+            <label for="time">
               <h2>Select the time and date you want to be <strong>notified</strong>.</h2>
             </label>
-            <input class="input" type="datetime-local" id="time" name="time">
+            <input class="input" type="datetime-local" id="time" name="time" required>
             <textarea class="input" maxlength="150" name=" note" id="note" rows="5"
-              placeholder="Write your note here..."></textarea>
+              placeholder="Write your note here..." required></textarea>
             <div id="btnArea">
               <button id="setAlarm">Set Alarm</button>
               <button class="btn-red" id="cancelAlam">Cancel</button>
@@ -34,7 +33,21 @@
       </div>
 
       <div class="right">
-        <div class="wrapper list-alarm" id="listAlarmSet">
+        <div class="wrapper list-alarm" id="listAlarmSet"></div>
+
+      </div>
+    </div>
+  </main>
+  <div id="error">
+  </div>
+  <script src="app.js"></script>
+</body>
+
+</html>
+
+
+<!-- 
+
 
           <div class="alarm-item">
             <div class="content-top">
@@ -48,81 +61,7 @@
                 <button>Edit</button>
                 <button class="btn-red">Delete</button>
               </div>
-
             </div>
-
-            <div class="note-text">
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita nobis cumque,
-                recusandae nesciunt voluptates quo, sint voluptatibus minus voluptas.
-              </p>
-            </div>
-          </div>
-          <div class="alarm-item">
-            <div class="content-top">
-              <div class="time-info">
-                <div class="placement">
-                  10
-                </div>
-                <div class="time-set">2018-06-14T00:00</div>
-              </div>
-              <button>Edit</button>
-            </div>
-
-            <div class="note-text">
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita nobis cumque,
-                recusandae nesciunt voluptates quo, sint voluptatibus minus voluptas.
-              </p>
-            </div>
-          </div>
-          <div class="alarm-item">
-            <div class="content-top">
-              <div class="time-info">
-                <div class="placement">
-                  10
-                </div>
-                <div class="time-set">2018-06-14T00:00</div>
-              </div>
-              <button>Edit</button>
-            </div>
-
-            <div class="note-text">
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita nobis cumque,
-                recusandae nesciunt voluptates quo, sint voluptatibus minus voluptas.
-              </p>
-            </div>
-          </div>
-          <div class="alarm-item">
-            <div class="content-top">
-              <div class="time-info">
-                <div class="placement">
-                  10
-                </div>
-                <div class="time-set">2018-06-14T00:00</div>
-              </div>
-              <button>Edit</button>
-            </div>
-
-            <div class="note-text">
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita nobis cumque,
-                recusandae nesciunt voluptates quo, sint voluptatibus minus voluptas.
-              </p>
-            </div>
-          </div>
-          <div class="alarm-item">
-            <div class="content-top">
-              <div class="time-info">
-                <div class="placement">
-                  10
-                </div>
-                <div class="time-set">2018-06-14T00:00</div>
-              </div>
-              <button>Edit</button>
-            </div>
-
             <div class="note-text">
               <p>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita nobis cumque,
@@ -131,15 +70,6 @@
             </div>
           </div>
 
-        </div>
 
-      </div>
-    </div>
-  </main>
-  <script src="app.js"></script>
-</body>
-
-</html>
-<!-- 
-value="2018-06-12T19:30" min="2018-06-07T00:00"
-              max="" -->
+        
+ -->
