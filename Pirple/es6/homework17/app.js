@@ -55,7 +55,7 @@ function startApp() {
 	notifyMe();
 	pullFromStorage(onAlarms);
 	pullFromStorage(offAlarms);
-	populateAlarmList(onAlarms);
+	updateContent(onAlarms);
 }
 
 function setAlarm() {
@@ -228,24 +228,29 @@ function notifyMe() {
 
 // ============= Populate Functions
 
-function updateContent() {
-	console.log(listAlarmDiv.innerHTML);
+function updateContent(obj, refreshStartIndex = 0) {
+	const index = obj.index;
+	// console.log(index.splice(2));
+	// populateAlarmList(obj);
+	populateAlarmList(obj, refreshStartIndex);
+	console.log(index);
 	if (!listAlarmDiv.innerHTML) {
 		console.log('no content');
 	} else {
 		console.log('has content');
 	}
 }
-updateContent();
 
-function populateAlarmList(obj) {
-	const index = obj.index;
+function populateAlarmList(obj, refreshStartIndex) {
+	const index = obj.index,
+		alarmCardSequenceAdjustment = refreshStartIndex + 1;
+	index.splice(0, refreshStartIndex);
 	for (const prop in index) {
 		const id = index[prop],
 			alarmTime = new Date(obj[id].alarmTime),
 			alarmTimeShort = alarmTime.toString().slice(0, 21),
 			note = obj[id].note,
-			alarmCardSequence = parseInt(prop) + 1,
+			alarmCardSequence = parseInt(prop) + alarmCardSequenceAdjustment,
 			alarmCardControls = `
 				<button>Edit</button>
 				<button class="btn-red">Delete</button>`,
