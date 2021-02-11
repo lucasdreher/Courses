@@ -32,7 +32,8 @@ const //HTML elements
 	btnSetAlarm = document.getElementById('setAlarm'),
 	errorMsgDiv = document.getElementById('error'),
 	listAlarmDiv = document.getElementById('listAlarmSet'),
-	btnAreaDiv = document.getElementById('btnArea');
+	btnAreaDiv = document.getElementById('btnArea'),
+	controlPanel = document.getElementById('control');
 
 // ============= Global variables
 
@@ -289,11 +290,14 @@ function updateContent() {
 	hasBtnOffAlarms();
 }
 
+// TODO
 function hasBtnOffAlarms() {
 	if (emptyOffAlarms) {
 		console.log('emptyOffAlarms');
 		if (offAlarms.index.length) {
 			emptyOffAlarms = false;
+			const button = `<button>View all past alarms</button>`;
+			btnAreaDiv.insertAdjacentHTML('afterend', button);
 		} else {
 			console.log('empty');
 			// btnAreaDiv
