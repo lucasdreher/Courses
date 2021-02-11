@@ -31,7 +31,8 @@ const //HTML elements
 	inputNote = document.getElementById('note'),
 	btnSetAlarm = document.getElementById('setAlarm'),
 	errorMsgDiv = document.getElementById('error'),
-	listAlarmDiv = document.getElementById('listAlarmSet');
+	listAlarmDiv = document.getElementById('listAlarmSet'),
+	btnAreaDiv = document.getElementById('btnArea');
 
 // ============= Global variables
 
@@ -39,6 +40,8 @@ const onAlarms = { index: [], name: 'onAlarms' },
 	offAlarms = { index: [], name: 'offAlarms' };
 
 let currentAlarm, //Alarm to be edited
+	offAlarmsShow = false,
+	emptyOffAlarms = true,
 	testAlarm = {
 		alarmTime: 1613033940000,
 		note: 'text'
@@ -55,7 +58,7 @@ function startApp() {
 	notifyMe();
 	pullFromStorage(onAlarms);
 	pullFromStorage(offAlarms);
-	updateContent(onAlarms);
+	updateContent();
 }
 
 function setAlarm() {
@@ -63,7 +66,7 @@ function setAlarm() {
 		createAlarm();
 		pushToStorage(onAlarms);
 		resetInput();
-		return;
+		updateContent();
 	}
 }
 
@@ -98,6 +101,7 @@ function errorMsg(e) {
 function resetInput() {
 	inputTime.value = '';
 	inputNote.value = '';
+	currentAlarm = undefined; // I think I don't need it
 	errorMsg();
 }
 
@@ -136,6 +140,42 @@ function pullFromStorage(obj) {
 	} else {
 		return false;
 	}
+}
+
+function deleteAlarm() {
+	console.log(onAlarms);
+	const id = this.parentNode.dataset.id;
+	let obj;
+	console.log(id);
+	if (offAlarmsShow) {
+		const key = onAlarms.index[id];
+		obj = offAlarms;
+	} else {
+		const key = onAlarms.index[id].toString();
+		console.log(key);
+		console.log(onAlarms.index[id]);
+		console.log(onAlarms);
+		onAlarms.index.splice(id, 1);
+		delete onAlarms[key];
+		console.log(onAlarms);
+		obj = onAlarms;
+	}
+	pushToStorage(obj);
+	resetInput();
+	updateContent();
+}
+function temp() {
+	// key = t1 + t2,
+	// 	note = inputNote.value;
+	// onAlarms.index.push(key);
+	// onAlarms.index.sort();
+	// onAlarms[key]
+}
+
+function editAlarm() {
+	const id = this.parentNode.dataset.id;
+	console.log(id);
+	// beasts.indexOf('giraffe')
 }
 
 // ============= Notice API System
@@ -228,32 +268,55 @@ function notifyMe() {
 
 // ============= Populate Functions
 
-function updateContent(obj, refreshStartIndex = 0) {
+function updateContent() {
+	const obj = {};
+	if (offAlarmsShow) {
+		Object.assign(obj, offAlarms);
+	} else {
+		Object.assign(obj, onAlarms);
+	}
 	const index = obj.index;
-	// console.log(index.splice(2));
-	// populateAlarmList(obj);
-	populateAlarmList(obj, refreshStartIndex);
-	console.log(index);
+	listAlarmDiv.innerHTML = ''; //purge old content
+	populateAlarmList(obj);
 	if (!listAlarmDiv.innerHTML) {
 		console.log('no content');
+		const content = `<div class="alarm-item"><div class="content-top">No alarms...</div></div>`;
+		listAlarmDiv.insertAdjacentHTML('beforeend', content);
 	} else {
 		console.log('has content');
 	}
+	bindButtons();
+	hasBtnOffAlarms();
 }
 
-function populateAlarmList(obj, refreshStartIndex) {
-	const index = obj.index,
-		alarmCardSequenceAdjustment = refreshStartIndex + 1;
-	index.splice(0, refreshStartIndex);
+function hasBtnOffAlarms() {
+	if (emptyOffAlarms) {
+		console.log('emptyOffAlarms');
+		if (offAlarms.index.length) {
+			emptyOffAlarms = false;
+		} else {
+			console.log('empty');
+			// btnAreaDiv
+		}
+	}
+}
+
+// Almost a good idea to update to just a part os the content using refreshStartIndex
+// const index = obj.index,
+// alarmCardSequenceAdjustment = refreshStartIndex + 1;
+// index.splice(0, refreshStartIndex);
+
+function populateAlarmList(obj) {
+	const index = obj.index;
 	for (const prop in index) {
 		const id = index[prop],
 			alarmTime = new Date(obj[id].alarmTime),
 			alarmTimeShort = alarmTime.toString().slice(0, 21),
 			note = obj[id].note,
-			alarmCardSequence = parseInt(prop) + alarmCardSequenceAdjustment,
+			alarmCardSequence = parseInt(prop) + 1,
 			alarmCardControls = `
-				<button>Edit</button>
-				<button class="btn-red">Delete</button>`,
+				<button class="btn-edit">Edit</button>
+				<button class="btn-red btn-delete">Delete</button>`,
 			alarmCard = `
 				<div class="alarm-item">
 					<div class="content-top">
@@ -265,7 +328,7 @@ function populateAlarmList(obj, refreshStartIndex) {
 								${alarmTimeShort}
 							</div>
 						</div>
-						<div class="alarm-item-bottom-area">
+						<div class="alarm-item-control-area"  data-id="${prop}">
 							${alarmCardControls}
 						</div>
 					</div>
@@ -277,6 +340,19 @@ function populateAlarmList(obj, refreshStartIndex) {
 				</div>`;
 		listAlarmDiv.insertAdjacentHTML('beforeend', alarmCard);
 	}
+}
+
+function bindButtons() {
+	const arrBtnEdit = document.getElementsByClassName('btn-edit'),
+		arrBtnDelete = document.getElementsByClassName('btn-delete');
+	console.log(arrBtnEdit);
+	console.log(arrBtnDelete);
+	Array.from(arrBtnEdit).forEach(function(element) {
+		element.addEventListener('click', editAlarm);
+	});
+	Array.from(arrBtnDelete).forEach(function(element) {
+		element.addEventListener('click', deleteAlarm);
+	});
 }
 
 // ============= Functions for start
