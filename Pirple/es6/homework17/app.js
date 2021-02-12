@@ -59,7 +59,8 @@ function startApp() {
 	pullFromStorage(onAlarms);
 	pullFromStorage(offAlarms);
 	updateContent();
-	// setInterval(checkAlarmDeadlines, 1000);
+	setInterval(checkAlarmDeadlines, 1000);
+	// checkAlarmDeadlines();
 }
 
 function setAlarm() {
@@ -119,7 +120,9 @@ function createAlarm() {
 	const t = new Date(inputTime.value),
 		t1 = t.getTime(),
 		t2 = timeNowUnique(),
-		key = t1 + t2,
+		//should concatenate to give a more precise difference
+		time = parseInt(t1.toString().slice(0, 9) + t2.toString().slice(6)),
+		key = time,
 		note = inputNote.value;
 	if (editModeOn.status) {
 		const index = editModeOn.index,
@@ -163,7 +166,9 @@ function deleteAlarm() {
 	const id = this.parentNode.dataset.id;
 	let obj;
 	if (offAlarmsContent.show) {
-		const key = onAlarms.index[id];
+		const key = offAlarms.index[id]; //.toString();
+		offAlarms.index.splice(id, 1);
+		delete offAlarms[key];
 		obj = offAlarms;
 	} else {
 		const key = onAlarms.index[id]; //.toString();
@@ -244,18 +249,18 @@ function updateAlarms(key, time, note) {
 		alarmTime: time,
 		note: note
 	};
+	//remove from onAlarm
+	onAlarms.index.splice(0, 1);
+	delete onAlarms[key];
+	//push both to storage
+	pushToStorage(onAlarms);
 	pushToStorage(offAlarms);
 	console.log('updated');
+	if (editModeOn.status) {
+		resetInput();
+	}
+	updateContent();
 }
-
-// function setAlarm() {
-// 	if (validateForm()) {
-// 		createAlarm();
-// 		pushToStorage(onAlarms);
-// 		resetInput();
-// 		updateContent();
-// 	}
-// }
 
 // ============= Notice API System
 
@@ -273,7 +278,7 @@ function notifyAlarm(firstAlarmKey) {
 		date = new Date(alarmTime),
 		title = `NOTIFICATION ALARM: ${date.toString().slice(0, 21)}`,
 		msg = onAlarms[firstAlarmKey].note;
-	// notify(title, msg);
+	notify(title, msg);
 	updateAlarms(firstAlarmKey, alarmTime, msg);
 }
 
@@ -346,10 +351,12 @@ function notifyMe() {
 		alert('This browser does not support system notifications');
 	} else if (Notification.permission === 'granted') {
 		notify(title, msg);
+		console.log('Notify API permission granted!');
 	} else if (Notification.permission !== 'denied') {
 		Notification.requestPermission(function(permission) {
 			if (permission === 'granted') {
 				notify(title, msg);
+				console.log('Notify API permission granted!');
 			}
 		});
 	}
@@ -358,13 +365,15 @@ function notifyMe() {
 // ============= Populate Functions
 
 function updateContent() {
+	offAlarmsContent.hasContent = offAlarms.index.length; //check if have content
 	const obj = {};
-	if (offAlarmsContent.show) {
+	if (offAlarmsContent.show && offAlarmsContent.hasContent) {
 		Object.assign(obj, offAlarms);
 	} else {
+		offAlarmsContent.show = false;
 		Object.assign(obj, onAlarms);
 	}
-	console.log(obj);
+	// console.log(obj);
 	const index = obj.index;
 	listAlarmDiv.innerHTML = ''; //purge old content
 	populateAlarmList(obj);
@@ -375,64 +384,59 @@ function updateContent() {
 	} else {
 		console.log('has content');
 	}
-	offAlarmsContent.hasContent = offAlarms.index.length; //check if have content
 	bindButtons();
 	hasBtnOffAlarms();
 }
 
-// TODO
 function hasBtnOffAlarms() {
 	if (offAlarmsContent.hasContent) {
 		console.log('offAlarms has content');
 		if (!offAlarmsContent.btnOffAlarms) {
 			//create btn on DOM
-			const button = `<button id="btnOffAlarms">View all-- past alarms</button>`;
+			const button = `<button id="btnOffAlarms">------</button>`;
 			btnAreaDiv.insertAdjacentHTML('afterend', button);
 			//add event listeners //configure offAlarmsContent
 			offAlarmsContent.btnOffAlarms = document.getElementById('btnOffAlarms');
-			offAlarmsContent.btnOffAlarms.addEventListener('click', cancelEditing);
+			offAlarmsContent.btnOffAlarms.addEventListener('click', showPastAlarms);
+		}
+		if (offAlarmsContent.show) {
+			offAlarmsContent.btnOffAlarms.innerText = 'Hide past alarms';
+		} else {
+			offAlarmsContent.btnOffAlarms.innerText = 'View past alarms';
 		}
 	} else {
 		console.log('offAlarms still empty');
-		// remove cancel btn
-		offAlarmsContent.btnOffAlarms.remove();
-		delete offAlarmsContent.btnOffAlarms;
+		if (offAlarmsContent.btnOffAlarms) {
+			// remove btnOffAlarms btn
+			offAlarmsContent.btnOffAlarms.remove();
+			delete offAlarmsContent.btnOffAlarms;
+		}
 	}
 }
 
-// if (editModeOn.btnCancel) {
-// 	console.log('btnCancelExists');
-// 	return;
-// } else {
-// 	//create btn on DOM
-const button = `<button class="btn-red" id="cancelAlarm">Cancel</button>`;
-btnAreaDiv.insertAdjacentHTML('beforeend', button);
-// 	//add event listeners //configure editModeOn
-editModeOn.btnCancel = document.getElementById('cancelAlarm');
-editModeOn.btnCancel.addEventListener('click', cancelEditing);
-// }
-// } else {
-// //remove cancel btn
-// editModeOn.btnCancel.remove();
-// delete editModeOn.btnCancel;
-// }
-
-// Almost a good idea to update to just a part os the content using refreshStartIndex
-// const index = obj.index,
-// alarmCardSequenceAdjustment = refreshStartIndex + 1;
-// index.splice(0, refreshStartIndex);
+function showPastAlarms() {
+	if (offAlarmsContent.show) {
+		offAlarmsContent.show = false;
+	} else {
+		offAlarmsContent.show = true;
+	}
+	resetInput();
+	updateContent();
+}
 
 function populateAlarmList(obj) {
 	const index = obj.index;
 	for (const prop in index) {
+		let alarmCardSequence, alarmCardEditBtn;
+		if (offAlarmsContent.show) {
+			(alarmCardSequence = '-'), (alarmCardEditBtn = '');
+		} else {
+			(alarmCardSequence = parseInt(prop) + 1), (alarmCardEditBtn = '<button class="btn-edit">Edit</button>');
+		}
 		const id = index[prop],
 			alarmTime = new Date(obj[id].alarmTime),
 			alarmTimeShort = alarmTime.toString().slice(0, 21),
 			note = obj[id].note,
-			alarmCardSequence = parseInt(prop) + 1,
-			alarmCardControls = `
-				<button class="btn-edit">Edit</button>
-				<button class="btn-red btn-delete">Delete</button>`,
 			alarmCard = `
 				<div class="alarm-item">
 					<div class="content-top">
@@ -445,7 +449,8 @@ function populateAlarmList(obj) {
 							</div>
 						</div>
 						<div class="alarm-item-control-area"  data-id="${prop}">
-							${alarmCardControls}
+							${alarmCardEditBtn}
+							<button class="btn-red btn-delete">Delete</button>
 						</div>
 					</div>
 					<div class="note-text">
