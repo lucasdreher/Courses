@@ -38,15 +38,14 @@ const //HTML elements
 // ============= Global variables
 
 const onAlarms = { index: [], name: 'onAlarms' },
-	offAlarms = { index: [], name: 'offAlarms' };
+	offAlarms = { index: [], name: 'offAlarms' },
+	offAlarmsContent = { show: false },
+	editModeOn = { status: false };
 
-let currentAlarm, //Alarm to be edited
-	offAlarmsShow = false,
-	emptyOffAlarms = true,
-	testAlarm = {
-		alarmTime: 1613033940000,
-		note: 'text'
-	};
+let testAlarm = {
+	alarmTime: 1613033940000,
+	note: 'text'
+};
 // ============= Event Listeners
 btnSetAlarm.addEventListener('click', setAlarm);
 
@@ -60,6 +59,7 @@ function startApp() {
 	pullFromStorage(onAlarms);
 	pullFromStorage(offAlarms);
 	updateContent();
+	// setInterval(checkAlarmDeadlines, 1000);
 }
 
 function setAlarm() {
@@ -102,7 +102,16 @@ function errorMsg(e) {
 function resetInput() {
 	inputTime.value = '';
 	inputNote.value = '';
-	currentAlarm = undefined; // I think I don't need it
+	// currentAlarm = undefined; // I think I don't need it
+	if (editModeOn.status) {
+		//configure editModeOn to revert to Default Status
+		editModeOn.status = false;
+		delete editModeOn.key;
+		delete editModeOn.index;
+		hasBtnCancel(); //remove cancel btn
+		//rename set alarm to update alarm
+		btnSetAlarm.innerText = 'Set Alarm';
+	}
 	errorMsg();
 }
 
@@ -112,6 +121,13 @@ function createAlarm() {
 		t2 = timeNowUnique(),
 		key = t1 + t2,
 		note = inputNote.value;
+	if (editModeOn.status) {
+		const index = editModeOn.index,
+			key = onAlarms.index[editModeOn.index];
+		onAlarms.index.splice(index, 1);
+		delete onAlarms[key];
+		console.log(index, key, 'updated');
+	}
 	onAlarms.index.push(key);
 	onAlarms.index.sort();
 	onAlarms[key] = {
@@ -144,40 +160,102 @@ function pullFromStorage(obj) {
 }
 
 function deleteAlarm() {
-	console.log(onAlarms);
 	const id = this.parentNode.dataset.id;
 	let obj;
-	console.log(id);
-	if (offAlarmsShow) {
+	if (offAlarmsContent.show) {
 		const key = onAlarms.index[id];
 		obj = offAlarms;
 	} else {
-		const key = onAlarms.index[id].toString();
-		console.log(key);
-		console.log(onAlarms.index[id]);
-		console.log(onAlarms);
+		const key = onAlarms.index[id]; //.toString();
 		onAlarms.index.splice(id, 1);
 		delete onAlarms[key];
-		console.log(onAlarms);
 		obj = onAlarms;
 	}
 	pushToStorage(obj);
 	resetInput();
 	updateContent();
 }
-function temp() {
-	// key = t1 + t2,
-	// 	note = inputNote.value;
-	// onAlarms.index.push(key);
-	// onAlarms.index.sort();
-	// onAlarms[key]
-}
 
 function editAlarm() {
 	const id = this.parentNode.dataset.id;
-	console.log(id);
-	// beasts.indexOf('giraffe')
+	editMode(id);
 }
+
+function editMode(id) {
+	//configure editModeOn
+	editModeOn.status = true;
+	editModeOn.index = parseInt(id);
+	editModeOn.key = onAlarms.index[id];
+	//get values
+	const time = new Date(onAlarms[editModeOn.key].alarmTime),
+		note = onAlarms[editModeOn.key].note;
+	//update values at inputs
+	inputTime.value = timeNow(time);
+	inputNote.value = note;
+	//rename set alarm to update alarm
+	btnSetAlarm.innerText = 'Update Alarm';
+	//create cancel btn
+	hasBtnCancel();
+}
+
+// function create cancel btn logic
+function hasBtnCancel() {
+	//check for create or deletion
+	if (editModeOn.status) {
+		//check if button is already created
+		if (!editModeOn.btnCancel) {
+			//create btn on DOM
+			const button = `<button class="btn-red" id="cancelAlarm">Cancel</button>`;
+			btnAreaDiv.insertAdjacentHTML('beforeend', button);
+			//add event listeners //configure editModeOn
+			editModeOn.btnCancel = document.getElementById('cancelAlarm');
+			editModeOn.btnCancel.addEventListener('click', cancelEditing);
+		}
+	} else {
+		//remove cancel btn
+		editModeOn.btnCancel.remove();
+		delete editModeOn.btnCancel;
+	}
+}
+
+function cancelEditing() {
+	resetInput();
+}
+
+function checkAlarmDeadlines() {
+	const firstAlarmKey = onAlarms.index[0],
+		// time = timeNow(),
+		time = timeNowUnique(),
+		// timeTrigger = new Date(onAlarms[firstAlarmKey].alarmTime).getTime();
+		timeTrigger = parseInt(onAlarms[firstAlarmKey].alarmTime);
+	// console.log`Alarm checked at time: ${time}(`Alarm checked at time: ${time}, firstAlarmKey: ${firstAlarmKey}, timeTrigger: ${timeTrigger}`);
+	console.log('U', time, 'T', timeTrigger, 'K', firstAlarmKey);
+	// console.log(time > timeTrigger);
+	if (time > timeTrigger) {
+		notifyAlarm(firstAlarmKey);
+	}
+}
+
+function updateAlarms(key, time, note) {
+	//create alarm on off alarm
+	offAlarms.index.push(key);
+	offAlarms.index.sort();
+	offAlarms[key] = {
+		alarmTime: time,
+		note: note
+	};
+	pushToStorage(offAlarms);
+	console.log('updated');
+}
+
+// function setAlarm() {
+// 	if (validateForm()) {
+// 		createAlarm();
+// 		pushToStorage(onAlarms);
+// 		resetInput();
+// 		updateContent();
+// 	}
+// }
 
 // ============= Notice API System
 
@@ -187,6 +265,16 @@ function notify(title, msg) {
 		body: msg
 	});
 	setTimeout(notification.close.bind(notification), 10000);
+}
+
+function notifyAlarm(firstAlarmKey) {
+	console.log('Notified ' + firstAlarmKey);
+	const alarmTime = onAlarms[firstAlarmKey].alarmTime,
+		date = new Date(alarmTime),
+		title = `NOTIFICATION ALARM: ${date.toString().slice(0, 21)}`,
+		msg = onAlarms[firstAlarmKey].note;
+	// notify(title, msg);
+	updateAlarms(firstAlarmKey, alarmTime, msg);
 }
 
 // ============= Time Functions
@@ -271,11 +359,12 @@ function notifyMe() {
 
 function updateContent() {
 	const obj = {};
-	if (offAlarmsShow) {
+	if (offAlarmsContent.show) {
 		Object.assign(obj, offAlarms);
 	} else {
 		Object.assign(obj, onAlarms);
 	}
+	console.log(obj);
 	const index = obj.index;
 	listAlarmDiv.innerHTML = ''; //purge old content
 	populateAlarmList(obj);
@@ -286,24 +375,47 @@ function updateContent() {
 	} else {
 		console.log('has content');
 	}
+	offAlarmsContent.hasContent = offAlarms.index.length; //check if have content
 	bindButtons();
 	hasBtnOffAlarms();
 }
 
 // TODO
 function hasBtnOffAlarms() {
-	if (emptyOffAlarms) {
-		console.log('emptyOffAlarms');
-		if (offAlarms.index.length) {
-			emptyOffAlarms = false;
-			const button = `<button>View all past alarms</button>`;
+	if (offAlarmsContent.hasContent) {
+		console.log('offAlarms has content');
+		if (!offAlarmsContent.btnOffAlarms) {
+			//create btn on DOM
+			const button = `<button id="btnOffAlarms">View all-- past alarms</button>`;
 			btnAreaDiv.insertAdjacentHTML('afterend', button);
-		} else {
-			console.log('empty');
-			// btnAreaDiv
+			//add event listeners //configure offAlarmsContent
+			offAlarmsContent.btnOffAlarms = document.getElementById('btnOffAlarms');
+			offAlarmsContent.btnOffAlarms.addEventListener('click', cancelEditing);
 		}
+	} else {
+		console.log('offAlarms still empty');
+		// remove cancel btn
+		offAlarmsContent.btnOffAlarms.remove();
+		delete offAlarmsContent.btnOffAlarms;
 	}
 }
+
+// if (editModeOn.btnCancel) {
+// 	console.log('btnCancelExists');
+// 	return;
+// } else {
+// 	//create btn on DOM
+const button = `<button class="btn-red" id="cancelAlarm">Cancel</button>`;
+btnAreaDiv.insertAdjacentHTML('beforeend', button);
+// 	//add event listeners //configure editModeOn
+editModeOn.btnCancel = document.getElementById('cancelAlarm');
+editModeOn.btnCancel.addEventListener('click', cancelEditing);
+// }
+// } else {
+// //remove cancel btn
+// editModeOn.btnCancel.remove();
+// delete editModeOn.btnCancel;
+// }
 
 // Almost a good idea to update to just a part os the content using refreshStartIndex
 // const index = obj.index,
@@ -349,8 +461,8 @@ function populateAlarmList(obj) {
 function bindButtons() {
 	const arrBtnEdit = document.getElementsByClassName('btn-edit'),
 		arrBtnDelete = document.getElementsByClassName('btn-delete');
-	console.log(arrBtnEdit);
-	console.log(arrBtnDelete);
+	// console.log(arrBtnEdit);
+	// console.log(arrBtnDelete);
 	Array.from(arrBtnEdit).forEach(function(element) {
 		element.addEventListener('click', editAlarm);
 	});
