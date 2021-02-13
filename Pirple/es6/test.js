@@ -620,3 +620,128 @@ or multiple variables
 
 // anotherObj.greet('Jim');
 // anotherObj.anotherMethod('Tim', 1, false, true, [ 123 ], 6);
+
+// =============== Map Object
+/*
+  - Used for key/value pairs
+  - Any value can be used for either a key or value (i.e. objects, string, function)
+  - Reasons for using map Over Object:
+    - Object prototype has default keys that might conflict with own keys
+    - Keys of map can be anything, whereas with objects, have to be string or symbol
+    - Can easily get the size of Map
+*/
+
+// const myMap = new Map();
+// const firstKey = 'key1',
+// 	firstVal = 'value1',
+// 	secondKey = {},
+// 	thirdKey = function() {};
+
+// myMap.set(firstKey, firstVal);
+// // console.log(myMap.get(firstKey));
+// myMap.set(secondKey, 'value2');
+// // console.log(myMap.get(secondKey));
+// // console.log(myMap.has(secondKey));
+// myMap.set(thirdKey, 'value3');
+// // console.log(myMap.get('key33'));
+// // console.log(myMap.has('key33'));
+// // console.log(myMap);
+// // console.log(myMap.size);
+// // myMap.clear();
+// // console.log(myMap);
+// // console.log(myMap.size);
+
+// /* Iterating
+//    keys(), values(), entries() */
+
+// // myMap.forEach((val) => console.log(val));
+// // console.log(myMap.keys());
+
+// // myMap.delete(thirdKey);
+
+// // for (const [ key, value ] of myMap.entries()) {
+// // 	console.log(`${key} => ${value}`);
+// // }
+
+// // for (const key of myMap.keys()) {
+// // 	console.log(key);
+// // }
+
+// // for (const val of myMap.values()) {
+// // 	console.log(val);
+// // }
+
+// const myMapData = [ [ 'keyA', 'value 1' ], [ 'keyB', 'value 2' ] ];
+// const anotherMap = new Map(myMapData);
+// const yetAnotherMap = new Map([
+// 	[ 'keyA', 'value 1' ],
+// 	[ 'keyB', 'value 2' ],
+// 	[ 'keyC', 'value 3' ],
+// 	[ 'keyD', 'value 4' ],
+// 	[ 'keyE', 'value 5' ]
+// ]);
+
+// // console.log(anotherMap);
+
+// const arrFromMap = Array.from(yetAnotherMap);
+// // console.log(arrFromMap);
+
+// // =============== Set object
+// /*
+//   -Lets you store unique values of any type
+//   - Each element is unique
+// */
+
+// const mySet = new Set();
+// const obj123 = { a: 1, b: 2, c: 3 };
+
+// mySet.add('Bob');
+// mySet.add(true);
+// mySet.add('Bob');
+// mySet.add(obj123);
+
+// // console.log(mySet);
+// // console.log(mySet.size);
+// // mySet.delete(obj123);
+// // console.log(mySet.size);
+// // console.log(mySet.has('Bob'));
+
+// // mySet.forEach((s) => {
+// // 	if (typeof s === 'object') {
+// // 		console.log('we got an object');
+// // 	} else {
+// // 		console.log(`Set item: ${s}`);
+// // 	}
+// // });
+
+// /* Iterating
+//    keys(), values(), entries() */
+
+// // for (const [ key, value ] of mySet.entries()) {
+// // 	console.log(`${key} => ${value}`);
+// // }
+
+// // for (const key of mySet.keys()) {
+// // 	console.log(key);
+// // }
+
+// // for (const val of mySet.values()) {
+// // 	console.log(val);
+// // }
+
+// // Convert set to array !!!
+
+// const arrFromSet = Array.from(mySet);
+// // console.log(arrFromSet);
+
+// const setFromArr = new Set(arrFromSet);
+// // console.log(setFromArr);
+
+// const yetAnotherSet = new Set([ 'a', 'd', 'h', 1, [ 1, 2 ], { tom: 'soy' } ]);
+// const yetAnotherArrFromSet = [ ...yetAnotherSet ];
+
+// console.log(yetAnotherArrFromSet);
+
+// // Out of topic for fun
+// const arrFromString = Array.from('Hello there!');
+// // console.log(arrFromString);
