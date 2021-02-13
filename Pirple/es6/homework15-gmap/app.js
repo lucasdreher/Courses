@@ -8,12 +8,12 @@ function initMap() {
 		center: place
 	});
 	const contentString = `<div id="content">
-		<h1 id="firstHeading" class="firstHeading">Place</h1>
+		<h1 id="firstHeading" class="firstHeading">You are here!</h1>
 		<div id="bodyContent">
 		<p>Latitude: ${lat} and Longitude: ${lng}</p>
 		</div>
 		</div>`;
-	const infowindow = new google.maps.InfoWindow({
+	const infoWindow = new google.maps.InfoWindow({
 		content: contentString
 	});
 	const marker = new google.maps.Marker({
@@ -21,6 +21,6 @@ function initMap() {
 		map: map
 	});
 	marker.addListener('click', () => {
-		infowindow.open(map, marker);
+		infoWindow.open(map, marker);
 	});
 }

@@ -5,11 +5,22 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Homework Assignment #18: The W3C Geolocation API</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+  <main>
+    <header>
+      <h1>The W3C Geolocation API</h1>
+      <button id="find-me">Show my location</button>
+      <p id="status"></p>
+    </header>
+    <div id="map"></div>
+  </main>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBIwzALxUPNbatRBj3Xi1Uhp0fFzwWNBkE&callback=initMap&libraries=&v=weekly"
+    async></script>
   <script src="app.js"></script>
 </body>
 
