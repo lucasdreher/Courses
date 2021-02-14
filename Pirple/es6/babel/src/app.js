@@ -20,3 +20,4 @@ const sally = new Person('Sally', 16);
 sally.sayHi();
 
 console.log('Watched!');
+console.log('Watched!');
