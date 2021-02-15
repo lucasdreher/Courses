@@ -47,11 +47,24 @@ const server = http.createServer(function(req, res) {
 			payload: buffer
 		};
 
-		// Send a response
-		res.end('Hello World\n');
+		// Route the request to the handler specified in the router
+		chosenHandler(data, function(statusCode, payload) {
+			// Use the status code called back by the handler, or default to 200
+			statusCode = typeof statusCode == 'number' ? statusCode : 200;
 
-		// Log the request
-		console.log('Request received with these payload:', buffer);
+			// Use the payload called by the handler, or the default to an empty object
+			payload = typeof payload == 'object' ? payload : {};
+
+			// Convert the payload to a string
+			const payloadString = JSON.stringify(payload);
+
+			//Return the response
+			res.writeHead(statusCode);
+			res.end(payloadString);
+
+			// Log the request
+			console.log('Returning this response: ', statusCode, payloadString);
+		});
 	});
 });
 
