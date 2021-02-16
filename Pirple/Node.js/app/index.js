@@ -9,14 +9,7 @@ const // Dependencies
 	url = require('url'),
 	StringDecoder = require('string_decoder').StringDecoder,
 	config = require('./config'),
-	fs = require('fs'),
-	_data = require('./lib/data');
-
-// TESTING
-// @TODO delete this
-_data.delete('test', 'newFile', function(err) {
-	console.log('This was the error', err);
-});
+	fs = require('fs');
 
 // Instantiated the HTTP server
 const httpServer = http.createServer(function(req, res) {
