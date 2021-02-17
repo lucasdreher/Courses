@@ -6,7 +6,6 @@
 const // Dependencies
 	crypto = require('crypto'),
 	config = require('./config');
-const { callbackify } = require('util');
 
 // Container for all the helpers
 const helpers = {};
