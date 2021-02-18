@@ -34,7 +34,8 @@ server.httpsServer = https.createServer(server.httpsServerOptions, function(req,
 // All the server logic for both the http and https server
 server.unifiedServer = function(req, res) {
 	// Get the url and parse it
-	const parseUrl = url.parse(req.url, true); //TODO deprecated
+	//const parseUrl = url.parse(req.url, true); //TODO deprecated
+	const parseUrl = new URL(req.url); //TODO verify
 
 	// Get the path
 	const path = parseUrl.pathname,

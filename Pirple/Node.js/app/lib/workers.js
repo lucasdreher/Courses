@@ -113,7 +113,8 @@ workers.performCheck = function(originalCheckData) {
 	let outcomeSent = false;
 
 	// Parse the hostname and path out of the original check data
-	const parseUrl = url.parse(`${originalCheckData.protocol}://${originalCheckData.url}`, true), //TODO deprecated
+	//const parseUrl = url.parse(`${originalCheckData.protocol}://${originalCheckData.url}`, true), //TODO deprecated
+	const parseUrl = new URL(`${originalCheckData.protocol}://${originalCheckData.url}`), //TODO verify
 		hostName = parseUrl.hostname,
 		path = parseUrl.path; // Using path and not 'pathname' because we want the query string
 
