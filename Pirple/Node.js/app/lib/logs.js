@@ -47,7 +47,7 @@ lib.list = function(includeCompressLogs, callback) {
 			const trimmedFileNames = [];
 			data.forEach((fileName) => {
 				// Add the .log files
-				if (fileName.indexOf('.log' > -1)) {
+				if (fileName.indexOf('.log') > -1) {
 					trimmedFileNames.push(fileName.replace('.log', ''));
 				}
 
@@ -85,23 +85,23 @@ lib.compress = function(logId, newFileId, callback) {
 										if (!err) {
 											callback(false);
 										} else {
-											callback(err);
+											callback(err + ' === fs.close');
 										}
 									});
 								} else {
-									callback(err);
+									callback(err + ' === fs.writeFile');
 								}
 							});
 						} else {
-							callback(err);
+							callback(err + ' === fs.open');
 						}
 					});
 				} else {
-					callback(err);
+					callback(err + ' === zlib.gzip');
 				}
 			});
 		} else {
-			callback(err);
+			callback(err + ' === fs.readFile');
 		}
 	});
 };

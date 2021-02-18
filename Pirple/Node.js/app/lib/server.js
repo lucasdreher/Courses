@@ -11,8 +11,10 @@ const // Dependencies
 	config = require('./config'),
 	fs = require('fs'),
 	handlers = require('./handlers'),
-	helpers = require('./helpers');
-path = require('path');
+	helpers = require('./helpers'),
+	path = require('path'),
+	util = require('util'),
+	debug = util.debuglog('server');
 
 // Instantiate the server module object
 const server = {};
@@ -34,8 +36,13 @@ server.httpsServer = https.createServer(server.httpsServerOptions, function(req,
 // All the server logic for both the http and https server
 server.unifiedServer = function(req, res) {
 	// Get the url and parse it
-	//const parseUrl = url.parse(req.url, true); //TODO deprecated
-	const parseUrl = new URL(req.url); //TODO verify
+	const parseUrl = url.parse(req.url, true); //TODO deprecated
+	// const parseUrl22 = new URL(req.url); //TODO verify
+
+	// console.log('===', parseUrl);
+	// console.log('---', req.url);
+	// console.log('+++', parseUrl.query);
+	// console.log(parseUrl22); // TODO make it work
 
 	// Get the path
 	const path = parseUrl.pathname,
@@ -88,8 +95,12 @@ server.unifiedServer = function(req, res) {
 			res.writeHead(statusCode);
 			res.end(payloadString);
 
-			// Log the request
-			console.log('Returning this response: ', statusCode, payloadString);
+			// If the response is 200, print green, otherwise, print red
+			if (statusCode == 200) {
+				debug('\x1b[32m%s\x1b[0m', `${method.toUpperCase()} /${trimmedPath} ${statusCode}`);
+			} else {
+				debug('\x1b[31m%s\x1b[0m', `${method.toUpperCase()} /${trimmedPath} ${statusCode}`);
+			}
 		});
 	});
 };
@@ -106,11 +117,11 @@ server.router = {
 server.init = function() {
 	// Start the HTTP server
 	server.httpServer.listen(config.httpPort, function() {
-		console.log(`The server is listening on port ${config.httpPort}`);
+		console.log('\x1b[36m%s\x1b[0m', `The server is listening on port ${config.httpPort}`);
 	});
 	// Start the HTTPS server
 	server.httpsServer.listen(config.httpsPort, function() {
-		console.log(`The server is listening on port ${config.httpsPort}`);
+		console.log('\x1b[35m%s\x1b[0m', `The server is listening on port ${config.httpsPort}`);
 	});
 };
 
