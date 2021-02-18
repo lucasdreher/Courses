@@ -24,8 +24,8 @@ server.httpServer = http.createServer(function(req, res) {
 
 // Instantiate the HTTPS server
 server.httpsServerOptions = {
-	key: fs.readFileSync(`${path.join(__dirname)}/../https/key.pem`),
-	cert: fs.readFileSync(`${path.join(__dirname)}/../https/cert.pem`)
+	key: fs.readFileSync(path.join(__dirname, '/../https/key.pem')),
+	cert: fs.readFileSync(path.join(__dirname, '/../https/cert.pem'))
 };
 server.httpsServer = https.createServer(server.httpsServerOptions, function(req, res) {
 	server.unifiedServer(req, res);
@@ -34,7 +34,7 @@ server.httpsServer = https.createServer(server.httpsServerOptions, function(req,
 // All the server logic for both the http and https server
 server.unifiedServer = function(req, res) {
 	// Get the url and parse it
-	const parseUrl = url.parse(req.url, true);
+	const parseUrl = url.parse(req.url, true); //TODO deprecated
 
 	// Get the path
 	const path = parseUrl.pathname,
