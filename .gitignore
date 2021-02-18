@@ -6,3 +6,8 @@ Pirple/es6/babel/package-lock.json
 Pirple/es6/babel/node_modules
 Pirple/es6/webpack/package-lock.json
 Pirple/es6/webpack/node_modules
+Pirple/Node.js/app/.data/checks/*.json
+Pirple/Node.js/app/.data/tokens/*.json
+Pirple/Node.js/app/.logs/*.gz.b64
+Pirple/Node.js/app/.logs/*.log
+Pirple/Node.js/app/.data/users/*.json
