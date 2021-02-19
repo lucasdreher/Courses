@@ -458,7 +458,7 @@ handlers._menus = {};
 
 // Menus - get
 // Required data: email, menu
-//TODO Optional data: item
+// Optional data: item
 handlers._menus.get = function(data, callback) {
 	// Check that the email is valid
 	const email =
