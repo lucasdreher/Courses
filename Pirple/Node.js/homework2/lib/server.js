@@ -104,7 +104,7 @@ server.router = {
 	ping: handlers.ping,
 	users: handlers.users,
 	tokens: handlers.tokens,
-	checks: handlers.checks
+	menus: handlers.menus
 };
 
 // Init script
@@ -117,6 +117,7 @@ server.init = function() {
 	server.httpsServer.listen(config.httpsPort, function() {
 		console.log('\x1b[35m%s\x1b[0m', `The server is listening on port ${config.httpsPort}`);
 	});
+	// handlers.menu(); //TODO REMOVE
 };
 
 // Export the module

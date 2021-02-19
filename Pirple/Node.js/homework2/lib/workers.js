@@ -97,16 +97,16 @@ workers.init = function() {
 	console.log('\x1b[33m%s\x1b[0m', 'Background workers ar running');
 
 	// Execute all the checks immediately
-	workers.gatherAllChecks();
+	// workers.gatherAllChecks();
 
 	// Call the loop so the checks will execute later on
-	workers.loop();
+	// workers.loop();
 
 	// Compress all the logs immediately
-	workers.rotateLogs();
+	// workers.rotateLogs();
 
 	// Call the compression loop so logs will be compress later on
-	workers.logRotationLoop();
+	// workers.logRotationLoop();
 };
 
 // Export the module

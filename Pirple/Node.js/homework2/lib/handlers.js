@@ -41,7 +41,11 @@ handlers._users.post = function(data, callback) {
 				? data.payload.address.trim()
 				: false,
 		email =
-			typeof data.payload.email == 'string' && data.payload.email.trim().length > 0 ? data.payload.email.trim() : false,
+			typeof data.payload.email == 'string' &&
+			data.payload.email.trim().length > 0 &&
+			helpers.emailCheck(data.payload.email)
+				? data.payload.email.trim()
+				: false,
 		password =
 			typeof data.payload.password == 'string' && data.payload.password.trim().length > 0
 				? data.payload.password.trim()
@@ -86,9 +90,10 @@ handlers._users.post = function(data, callback) {
 			}
 		});
 	} else {
-		callback(400, { Error: 'Missing required fields' });
+		callback(400, { Error: 'Missing required fields or the fields content are incorrect' });
 	}
 };
+
 // Users - get
 // Required data: email
 // Optional data: none
@@ -120,7 +125,7 @@ handlers._users.get = function(data, callback) {
 			}
 		});
 	} else {
-		callback(400, { Error: 'Missing required field' });
+		callback(400, { Error: 'Missing required field  or the field content are incorrect' });
 	}
 };
 
@@ -130,7 +135,11 @@ handlers._users.get = function(data, callback) {
 handlers._users.put = function(data, callback) {
 	// Check for the required field
 	const email =
-		typeof data.payload.email == 'string' && data.payload.email.trim().length > 0 ? data.payload.email.trim() : false;
+		typeof data.payload.email == 'string' &&
+		data.payload.email.trim().length > 0 &&
+		helpers.emailCheck(data.payload.email)
+			? data.payload.email.trim()
+			: false;
 	// Check for the optional fields
 	const firstName =
 			typeof data.payload.firstName == 'string' && data.payload.firstName.trim().length > 0
@@ -195,7 +204,7 @@ handlers._users.put = function(data, callback) {
 			callback(400, { Error: 'Missing fields to update' });
 		}
 	} else {
-		callback(400, { Error: 'Missing required field' });
+		callback(400, { Error: 'Missing required field  or the field content are incorrect' });
 	}
 };
 
@@ -219,7 +228,7 @@ handlers._users.delete = function(data, callback) {
 					if (!err && userData) {
 						_data.delete('users', email, function(err) {
 							if (!err) {
-								// Delete each of the checks associated with the user
+								// Delete each of the checks associated with the user // TODO Update to cart
 								const userChecks =
 										typeof userData.checks == 'object' && userData.checks instanceof Array ? userData.checks : [],
 									checksToDelete = userChecks.length;
@@ -262,7 +271,7 @@ handlers._users.delete = function(data, callback) {
 			}
 		});
 	} else {
-		callback(400, { Error: 'Missing required field' });
+		callback(400, { Error: 'Missing required field  or the field content are incorrect' });
 	}
 };
 
@@ -284,7 +293,11 @@ handlers._tokens = {};
 // Optional data: none
 handlers._tokens.post = function(data, callback) {
 	const email =
-			typeof data.payload.email == 'string' && data.payload.email.trim().length > 0 ? data.payload.email.trim() : false,
+			typeof data.payload.email == 'string' &&
+			data.payload.email.trim().length > 0 &&
+			helpers.emailCheck(data.payload.email)
+				? data.payload.email.trim()
+				: false,
 		password =
 			typeof data.payload.password == 'string' && data.payload.password.trim().length > 0
 				? data.payload.password.trim()
@@ -322,7 +335,7 @@ handlers._tokens.post = function(data, callback) {
 			}
 		});
 	} else {
-		callback(400, { Error: 'Missing required field(s)' });
+		callback(400, { Error: 'Missing required field(s) or the fields content are incorrect' });
 	}
 };
 
@@ -382,6 +395,7 @@ handlers._tokens.put = function(data, callback) {
 		callback(400, { Error: 'Missing required field(s) or field(s) are invalid' });
 	}
 };
+
 // Token - delete
 // Required data: id
 // Optional data: none
@@ -427,6 +441,61 @@ handlers._tokens.verifyToken = function(id, email, callback) {
 		}
 	});
 };
+
+// Menus *****
+
+handlers.menus = function(data, callback) {
+	const acceptableMethods = [ 'get' ];
+	if (acceptableMethods.indexOf(data.method) > -1) {
+		handlers._menus[data.method](data, callback);
+	} else {
+		callback(405);
+	}
+};
+
+// Container for all menus methods
+handlers._menus = {};
+
+// TODO Menus - get
+// Required data: email
+// Optional data: none
+handlers._menus.get = function(data, callback) {
+	// Check that the email is valid
+	const email =
+			typeof data.queryStringObject.email == 'string' && data.queryStringObject.email.trim().length > 0
+				? data.queryStringObject.email.trim()
+				: false,
+		menu =
+			typeof data.queryStringObject.menu == 'string' && data.queryStringObject.menu.trim().length > 0
+				? data.queryStringObject.menu.trim()
+				: 'pizzas';
+	if (email) {
+		// Get the token from the headers
+		const token = typeof data.headers.token == 'string' ? data.headers.token : false;
+
+		// Verify if the given token is valid for the email
+		handlers._tokens.verifyToken(token, email, function(tokenIsValid) {
+			if (tokenIsValid) {
+				// Lookup the menu
+				_data.read('menus', menu, function(err, data) {
+					if (!err && data) {
+						// Remove the hashed password from the user object before returning it to the requester
+						delete data.hashedPassword;
+						callback(200, data);
+					} else {
+						callback(404);
+					}
+				});
+			} else {
+				callback(403, { Error: 'Missing required token in headers, or token is invalid' });
+			}
+		});
+	} else {
+		callback(400, { Error: 'Missing required field  or the field content are incorrect' });
+	}
+};
+
+// TODO change it to carts Checks=============================================
 
 // Checks *****
 
