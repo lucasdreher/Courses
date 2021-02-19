@@ -468,8 +468,12 @@ handlers._menus.get = function(data, callback) {
 		menu =
 			typeof data.queryStringObject.menu == 'string' && data.queryStringObject.menu.trim().length > 0
 				? data.queryStringObject.menu.trim()
+				: false,
+		itemKey =
+			typeof data.queryStringObject.item == 'string' && data.queryStringObject.item.trim().length > 0
+				? data.queryStringObject.item.trim()
 				: false;
-	if (email) {
+	if (email && menu) {
 		// Get the token from the headers
 		const token = typeof data.headers.token == 'string' ? data.headers.token : false;
 
@@ -481,7 +485,18 @@ handlers._menus.get = function(data, callback) {
 					if (!err && data) {
 						// Remove the hashed password from the user object before returning it to the requester
 						delete data.hashedPassword;
-						callback(200, data);
+						// If an item was declared, look at the item, if not, look at the menu instead
+						if (itemKey) {
+							// Check if the declared item key exists
+							item = data[itemKey] ? data[itemKey] : false;
+							if (item) {
+								callback(200, item);
+							} else {
+								callback(404);
+							}
+						} else {
+							callback(200, data);
+						}
 					} else {
 						callback(404);
 					}
@@ -491,7 +506,7 @@ handlers._menus.get = function(data, callback) {
 			}
 		});
 	} else {
-		callback(400, { Error: 'Missing required field  or the field content are incorrect' });
+		callback(400, { Error: 'Missing required field(s)  or the content are incorrect' });
 	}
 };
 
