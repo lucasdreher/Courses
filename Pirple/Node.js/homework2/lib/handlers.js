@@ -642,7 +642,7 @@ handlers._carts.post = function(data, callback) {
 	}
 };
 
-//TODO Carts - get
+// Carts - get
 // Required data: id
 // Optional data: none
 handlers._carts.get = function(data, callback) {
@@ -760,7 +760,7 @@ handlers._carts.put = function(data, callback) {
 	}
 };
 
-//TODO Carts - delete
+// Carts - delete
 // Required data: id
 // Optional data: none
 handlers._carts.delete = function(data, callback) {
