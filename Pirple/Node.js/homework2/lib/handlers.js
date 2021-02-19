@@ -27,7 +27,7 @@ handlers._users = {};
 // Required data: firstName, lastName, address, email, password, tosAgreement
 // Optional data: none
 handlers._users.post = function(data, callback) {
-	// checks that all required fields are filled up
+	// Checks that all required fields are filled up
 	const firstName =
 			typeof data.payload.firstName == 'string' && data.payload.firstName.trim().length > 0
 				? data.payload.firstName.trim()
@@ -228,28 +228,28 @@ handlers._users.delete = function(data, callback) {
 					if (!err && userData) {
 						_data.delete('users', email, function(err) {
 							if (!err) {
-								// Delete each of the checks associated with the user // TODO Update to cart
-								const userChecks =
-										typeof userData.checks == 'object' && userData.checks instanceof Array ? userData.checks : [],
-									checksToDelete = userChecks.length;
-								if (checksToDelete > 0) {
-									let checksDeleted = 0,
+								// Delete each of the carts associated with the user // TODO Update to cart
+								const userCarts =
+										typeof userData.carts == 'object' && userData.carts instanceof Array ? userData.carts : [],
+									cartsToDelete = userCarts.length;
+								if (cartsToDelete > 0) {
+									let cartsDeleted = 0,
 										deletionErrors = false;
-									// Look through the checks
-									userChecks.forEach((checkId) => {
-										// Delete the check
-										_data.delete('checks', checkId, function(err) {
+									// Look through the carts
+									userCarts.forEach((cartId) => {
+										// Delete the cart
+										_data.delete('carts', cartId, function(err) {
 											if (err) {
 												deletionErrors = true;
 											}
-											checksDeleted++;
-											if (checksDeleted == checksToDelete) {
+											cartsDeleted++;
+											if (cartsDeleted == cartsToDelete) {
 												if (!deletionErrors) {
 													callback(200);
 												} else {
 													callback(500, {
 														Error:
-															"Errors encountered while attempting to delete all of the user's checks. All checks may not have been deleted from the system successfully"
+															"Errors encountered while attempting to delete all of the user's carts. All carts may not have been deleted from the system successfully"
 													});
 												}
 											}
@@ -456,9 +456,9 @@ handlers.menus = function(data, callback) {
 // Container for all menus methods
 handlers._menus = {};
 
-// TODO Menus - get
-// Required data: email
-// Optional data: none
+// Menus - get
+// Required data: email, menu
+//TODO Optional data: item
 handlers._menus.get = function(data, callback) {
 	// Check that the email is valid
 	const email =
@@ -468,7 +468,7 @@ handlers._menus.get = function(data, callback) {
 		menu =
 			typeof data.queryStringObject.menu == 'string' && data.queryStringObject.menu.trim().length > 0
 				? data.queryStringObject.menu.trim()
-				: 'pizzas';
+				: false;
 	if (email) {
 		// Get the token from the headers
 		const token = typeof data.headers.token == 'string' ? data.headers.token : false;
@@ -497,135 +497,157 @@ handlers._menus.get = function(data, callback) {
 
 // TODO change it to carts Checks=============================================
 
-// Checks *****
+// Carts *****
 
-handlers.checks = function(data, callback) {
+handlers.carts = function(data, callback) {
 	const acceptableMethods = [ 'post', 'get', 'put', 'delete' ];
 	if (acceptableMethods.indexOf(data.method) > -1) {
-		handlers._checks[data.method](data, callback);
+		handlers._carts[data.method](data, callback);
 	} else {
 		callback(405);
 	}
 };
 
-// Container for all checks methods
-handlers._checks = {};
+// Container for all carts methods
+handlers._carts = {};
 
-// Checks - post
-// Required data: protocol, url, method, successCodes, timeoutSeconds
+// Carts - post
+// Required data: email, cartItem.id, cartItem.menu, cartItem.quantity
 // Optional data: none
 
-handlers._checks.post = function(data, callback) {
+handlers._carts.post = function(data, callback) {
 	// Validate the inputs
-	const protocol =
-			typeof data.payload.protocol == 'string' && [ 'https', 'http' ].indexOf(data.payload.protocol) > -1
-				? data.payload.protocol
+	const email =
+			typeof data.payload.email == 'string' &&
+			data.payload.email.trim().length > 0 &&
+			helpers.emailCheck(data.payload.email)
+				? data.payload.email.trim()
 				: false,
-		url = typeof data.payload.url == 'string' && data.payload.url.trim().length > 0 ? data.payload.url.trim() : false,
-		method =
-			typeof data.payload.method == 'string' && [ 'post', 'get', 'put', 'delete' ].indexOf(data.payload.method) > -1
-				? data.payload.method
-				: false,
-		successCodes =
-			typeof data.payload.successCodes == 'object' &&
-			data.payload.successCodes instanceof Array &&
-			data.payload.successCodes.length > 0
-				? data.payload.successCodes
-				: false,
-		timeoutSeconds =
-			typeof data.payload.timeoutSeconds == 'number' &&
-			data.payload.timeoutSeconds % 1 === 0 &&
-			data.payload.timeoutSeconds >= 1 &&
-			data.payload.timeoutSeconds <= 5
-				? data.payload.timeoutSeconds
+		cartItemTest = typeof data.payload.cartItem == 'object' ? true : false;
+
+	if (email && cartItemTest) {
+		const cartItem =
+			typeof data.payload.cartItem.id == 'string' &&
+			data.payload.cartItem.id.trim().length > 0 &&
+			typeof data.payload.cartItem.menu == 'string' &&
+			data.payload.cartItem.menu.trim().length > 0 &&
+			typeof data.payload.cartItem.quantity == 'number' &&
+			data.payload.cartItem.quantity > 0
+				? data.payload.cartItem
 				: false;
+		if (cartItem) {
+			// Get the menu item from the menu file
+			const testMenu =
+				typeof data.payload.cartItem.menu == 'string' && data.payload.cartItem.menu.trim().length > 0
+					? data.payload.cartItem.menu.trim()
+					: false;
+			//Check menu file exits
+			// Lookup the menu
+			_data.read('menus', testMenu, function(err, testData) {
+				if (!err && testData) {
+					// Validate data
+					const itemOnMenu = testMenu[data.payload.cartItem.id.trim()];
+					// Verify content of cartItem
+					if (itemOnMenu) {
+						// Get the token from the headers
+						const token = typeof data.headers.token == 'string' ? data.headers.token : false;
 
-	if (protocol && url && method && successCodes && timeoutSeconds) {
-		// Get the token from the headers
-		const token = typeof data.headers.token == 'string' ? data.headers.token : false;
+						// Lookup the user by reading the token
+						_data.read('tokens', token, function(err, tokenData) {
+							if (!err && tokenData) {
+								const userEmail = tokenData.email;
+								// Look up the user data
+								_data.read('users', userEmail, function(err, userData) {
+									if (!err && userData) {
+										const userCarts =
+											typeof userData.carts == 'object' && userData.carts instanceof Array ? userData.carts : [];
+										// Verify if the user has less than the number of max-carts-per-user
+										if (userCarts.length < config.maxCarts) {
+											// Create a random id for the cart
+											const cartId = helpers.createRandomString(20);
 
-		// Lookup the user by reading the token
-		_data.read('tokens', token, function(err, tokenData) {
-			if (!err && tokenData) {
-				const userPhone = tokenData.email;
-				// Look up the user data
-				_data.read('users', userPhone, function(err, userData) {
-					if (!err && userData) {
-						const userChecks =
-							typeof userData.checks == 'object' && userData.checks instanceof Array ? userData.checks : [];
-						// Verify if the user has less than the number of max-checks-per-user
-						if (userChecks.length < config.maxChecks) {
-							// Create a random id for the check
-							const checkId = helpers.createRandomString(20);
+											// Create the cart object, and include the users email
+											const cartObject = {
+												id: cartId,
+												userEmail: userEmail,
+												items: {
+													[cartItem.id]: {
+														quantity: cartItem.quantity,
+														id: cartItem.id,
+														menu: cartItem.menu
+													}
+												}
+											};
 
-							// Create the check object, and include the users email
-							const checkObject = {
-								id: checkId,
-								userPhone: userPhone,
-								protocol: protocol,
-								url: url,
-								method: method,
-								successCodes: successCodes,
-								timeoutSeconds: timeoutSeconds
-							};
+											// Save the object
+											_data.create('carts', cartId, cartObject, function(err) {
+												if (!err) {
+													// Add the cart to the user's object
+													userData.carts = userCarts;
+													userData.carts.push(cartId);
 
-							// Save the object
-							_data.create('checks', checkId, checkObject, function(err) {
-								if (!err) {
-									// Add the check to the user's object
-									userData.checks = userChecks;
-									userData.checks.push(checkId);
-
-									// Save the new user data
-									_data.update('users', userPhone, userData, function(err) {
-										if (!err) {
-											//Return the data about the new check
-											callback(200, checkObject);
+													// Save the new user data
+													_data.update('users', userEmail, userData, function(err) {
+														if (!err) {
+															//Return the data about the new cart
+															callback(200, cartObject);
+														} else {
+															callback(500, { Error: 'Could not update the user with the new cart' });
+														}
+													});
+												} else {
+													callback(500, { Error: 'Could not create the new cart' });
+												}
+											});
 										} else {
-											callback(500, { Error: 'Could not update the user with the new check' });
+											callback(400, { Error: `The user already have the maximum number of carts ${config.maxCarts}` });
 										}
-									});
-								} else {
-									callback(500, { Error: 'Could not create the new check' });
-								}
-							});
-						} else {
-							callback(400, { Error: `The user already have the maximum number of checks ${config.maxChecks}` });
-						}
+									} else {
+										callback(403);
+									}
+								});
+							} else {
+								callback(403);
+							}
+						});
 					} else {
-						callback(403);
+						callback(400, {
+							Error: `The item '${data.payload.cartItem.id.trim()}' doesn't exists on menu '${testMenu}'`
+						});
 					}
-				});
-			} else {
-				callback(403);
-			}
-		});
+				} else {
+					callback(400, { Error: `The menu '${testMenu}' on item doesn't exists` });
+				}
+			});
+		} else {
+			callback(400, { Error: 'Cart Item content is missing' });
+		}
 	} else {
 		callback(400, { Error: 'Missing required inputs, or inputs are invalid' });
 	}
 };
 
-// Checks - get
+//TODO Carts - get
 // Required data: id
 // Optional data: none
-handlers._checks.get = function(data, callback) {
+handlers._carts.get = function(data, callback) {
 	// Check that the id is valid
 	const id =
 		typeof data.queryStringObject.id == 'string' && data.queryStringObject.id.trim().length == 20
 			? data.queryStringObject.id.trim()
 			: false;
 	if (id) {
-		// Lookup the check
-		_data.read('checks', id, function(err, checkData) {
-			if (!err && checkData) {
+		// Lookup the cart
+		_data.read('carts', id, function(err, cartData) {
+			if (!err && cartData) {
 				// Get the token from the headers
 				const token = typeof data.headers.token == 'string' ? data.headers.token : false;
 
-				// Verify if the given token is valid and belongs to the user who created the check
-				handlers._tokens.verifyToken(token, checkData.userPhone, function(tokenIsValid) {
+				// Verify if the given token is valid and belongs to the user who created the cart
+				handlers._tokens.verifyToken(token, cartData.userEmail, function(tokenIsValid) {
 					if (tokenIsValid) {
-						// Return the check data
-						callback(200, checkData);
+						// Return the cart data
+						callback(200, cartData);
 					} else {
 						callback(403);
 					}
@@ -639,10 +661,10 @@ handlers._checks.get = function(data, callback) {
 	}
 };
 
-// Checks - put
+//TODO Carts - put
 // Required data: id
 // Optional data: protocol, url, method, successCodes, timeoutSeconds (one must be sent)
-handlers._checks.put = function(data, callback) {
+handlers._carts.put = function(data, callback) {
 	// Check for the required field
 	const id = typeof data.payload.id == 'string' && data.payload.id.trim().length == 20 ? data.payload.id.trim() : false;
 	// Check for the optional fields
@@ -673,38 +695,38 @@ handlers._checks.put = function(data, callback) {
 	if (id) {
 		//Check to make sure one or more optional fields has been sent
 		if (protocol || url || method || successCodes || timeoutSeconds) {
-			// Lookup the check
-			_data.read('checks', id, function(err, checkData) {
-				if (!err && checkData) {
+			// Lookup the cart
+			_data.read('carts', id, function(err, cartData) {
+				if (!err && cartData) {
 					// Get the token from the headers
 					const token = typeof data.headers.token == 'string' ? data.headers.token : false;
 
-					// Verify if the given token is valid and belongs to the user who created the check
-					handlers._tokens.verifyToken(token, checkData.userPhone, function(tokenIsValid) {
+					// Verify if the given token is valid and belongs to the user who created the cart
+					handlers._tokens.verifyToken(token, cartData.userEmail, function(tokenIsValid) {
 						if (tokenIsValid) {
-							// Update the check where necessary
+							// Update the cart where necessary
 							if (protocol) {
-								checkData.protocol = protocol;
+								cartData.protocol = protocol;
 							}
 							if (url) {
-								checkData.url = url;
+								cartData.url = url;
 							}
 							if (method) {
-								checkData.method = method;
+								cartData.method = method;
 							}
 							if (successCodes) {
-								checkData.successCodes = successCodes;
+								cartData.successCodes = successCodes;
 							}
 							if (timeoutSeconds) {
-								checkData.timeoutSeconds = timeoutSeconds;
+								cartData.timeoutSeconds = timeoutSeconds;
 							}
 
 							// Store the new updates
-							_data.update('checks', id, checkData, function(err) {
+							_data.update('carts', id, cartData, function(err) {
 								if (!err) {
 									callback(200);
 								} else {
-									callback(500, { Error: 'Could not update the check' });
+									callback(500, { Error: 'Could not update the cart' });
 								}
 							});
 						} else {
@@ -712,7 +734,7 @@ handlers._checks.put = function(data, callback) {
 						}
 					});
 				} else {
-					callback(400, { Error: 'Check ID did not exist' });
+					callback(400, { Error: 'Cart ID did not exist' });
 				}
 			});
 		} else {
@@ -723,39 +745,39 @@ handlers._checks.put = function(data, callback) {
 	}
 };
 
-// Checks - delete
+//TODO Carts - delete
 // Required data: id
 // Optional data: none
-handlers._checks.delete = function(data, callback) {
+handlers._carts.delete = function(data, callback) {
 	// Check that the email is valid
 	const id =
 		typeof data.queryStringObject.id == 'string' && data.queryStringObject.id.trim().length == 20
 			? data.queryStringObject.id.trim()
 			: false;
 	if (id) {
-		// Lookup the check
-		_data.read('checks', id, function(err, checkData) {
-			if (!err && checkData) {
+		// Lookup the cart
+		_data.read('carts', id, function(err, cartData) {
+			if (!err && cartData) {
 				// Get the token from the headers
 				const token = typeof data.headers.token == 'string' ? data.headers.token : false;
 
 				// Verify if the given token is valid for the email
-				handlers._tokens.verifyToken(token, checkData.userPhone, function(tokenIsValid) {
+				handlers._tokens.verifyToken(token, cartData.userEmail, function(tokenIsValid) {
 					if (tokenIsValid) {
-						// Delete the check data
-						_data.delete('checks', id, function(err) {
+						// Delete the cart data
+						_data.delete('carts', id, function(err) {
 							if (!err) {
 								// Lookup the user
-								_data.read('users', checkData.userPhone, function(err, userData) {
+								_data.read('users', cartData.userEmail, function(err, userData) {
 									if (!err && userData) {
-										const userChecks =
-											typeof userData.checks == 'object' && userData.checks instanceof Array ? userData.checks : [];
-										// Remove the deleted check from their list of checks
-										const checkPosition = userChecks.indexOf(id);
-										if (checkPosition > -1) {
-											userChecks.splice(checkPosition, 1);
+										const userCarts =
+											typeof userData.carts == 'object' && userData.carts instanceof Array ? userData.carts : [];
+										// Remove the deleted cart from their list of carts
+										const cartPosition = userCarts.indexOf(id);
+										if (cartPosition > -1) {
+											userCarts.splice(cartPosition, 1);
 											// Re-save the user's data
-											_data.update('users', checkData.userPhone, userData, function(err) {
+											_data.update('users', cartData.userEmail, userData, function(err) {
 												if (!err) {
 													callback(200);
 												} else {
@@ -763,17 +785,17 @@ handlers._checks.delete = function(data, callback) {
 												}
 											});
 										} else {
-											callback(500, { Error: 'Could not find the check on the users object, so could not remove it' });
+											callback(500, { Error: 'Could not find the cart on the users object, so could not remove it' });
 										}
 									} else {
 										callback(500, {
 											Error:
-												'Could not find the user who created the check, co could not remove the check from the list of checks on the user object'
+												'Could not find the user who created the cart, co could not remove the cart from the list of carts on the user object'
 										});
 									}
 								});
 							} else {
-								callback(500, { Error: 'Could not delete the check data' });
+								callback(500, { Error: 'Could not delete the cart data' });
 							}
 						});
 					} else {
@@ -781,7 +803,7 @@ handlers._checks.delete = function(data, callback) {
 					}
 				});
 			} else {
-				callback(400, { Error: 'The specified check ID does not exist' });
+				callback(400, { Error: 'The specified cart ID does not exist' });
 			}
 		});
 	} else {
