@@ -49,6 +49,7 @@ handlers._users.post = function(data, callback) {
 	if (firstName && lastName && phone && password && tosAgreement) {
 		// Make sure that the user doesn't already exists
 		_data.read('users', phone, function(err, data) {
+			// The attempt to read the file trow an err if it doesn't exists
 			if (err) {
 				// Hash the password
 				const hashedPassword = helpers.hash(password);
