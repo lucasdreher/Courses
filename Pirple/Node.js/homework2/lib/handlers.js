@@ -510,8 +510,6 @@ handlers._menus.get = function(data, callback) {
 	}
 };
 
-// TODO change it to carts Checks=============================================
-
 // Carts *****
 
 handlers.carts = function(data, callback) {
@@ -541,35 +539,35 @@ handlers._carts.post = function(data, callback) {
 		cartItemTest = typeof data.payload.cartItem == 'object' ? true : false;
 
 	if (email && cartItemTest) {
-		const cartItem =
-			typeof data.payload.cartItem.id == 'string' &&
-			data.payload.cartItem.id.trim().length > 0 &&
-			typeof data.payload.cartItem.menu == 'string' &&
-			data.payload.cartItem.menu.trim().length > 0 &&
-			typeof data.payload.cartItem.quantity == 'number' &&
-			data.payload.cartItem.quantity % 1 === 0 &&
-			data.payload.cartItem.quantity > 0
-				? data.payload.cartItem
-				: false;
-		if (cartItem) {
-			// Get the menu item from the menu file
-			const testMenu =
-				typeof data.payload.cartItem.menu == 'string' && data.payload.cartItem.menu.trim().length > 0
-					? data.payload.cartItem.menu.trim()
-					: false;
-			//Check menu file exits
-			// Lookup the menu
-			_data.read('menus', testMenu, function(err, testData) {
-				if (!err && testData) {
-					// Validate data
-					const itemOnMenu = testMenu[data.payload.cartItem.id.trim()];
-					// Verify content of cartItem
-					if (itemOnMenu) {
-						// Get the token from the headers
-						const token = typeof data.headers.token == 'string' ? data.headers.token : false;
-						// Verify if the given token is valid for the email
-						handlers._tokens.verifyToken(token, email, function(tokenIsValid) {
-							if (tokenIsValid) {
+		// Get the token from the headers
+		const token = typeof data.headers.token == 'string' ? data.headers.token : false;
+		// Verify if the given token is valid for the email
+		handlers._tokens.verifyToken(token, email, function(tokenIsValid) {
+			if (tokenIsValid) {
+				const cartItem =
+					typeof data.payload.cartItem.id == 'string' &&
+					data.payload.cartItem.id.trim().length > 0 &&
+					typeof data.payload.cartItem.menu == 'string' &&
+					data.payload.cartItem.menu.trim().length > 0 &&
+					typeof data.payload.cartItem.quantity == 'number' &&
+					data.payload.cartItem.quantity % 1 === 0 &&
+					data.payload.cartItem.quantity > 0
+						? data.payload.cartItem
+						: false;
+				if (cartItem) {
+					// Get the menu item from the menu file
+					const testMenu =
+						typeof data.payload.cartItem.menu == 'string' && data.payload.cartItem.menu.trim().length > 0
+							? data.payload.cartItem.menu.trim()
+							: false;
+					//Check menu file exits
+					// Lookup the menu
+					_data.read('menus', testMenu, function(err, testData) {
+						if (!err && testData) {
+							// Validate data
+							const itemOnMenu = testMenu[data.payload.cartItem.id.trim()];
+							// Verify content of cartItem
+							if (itemOnMenu) {
 								// Lookup the user by reading the token
 								_data.read('tokens', token, function(err, tokenData) {
 									if (!err && tokenData) {
@@ -631,21 +629,21 @@ handlers._carts.post = function(data, callback) {
 									}
 								});
 							} else {
-								callback(403, { Error: 'Missing required token in headers, or token is invalid' });
+								callback(400, {
+									Error: `The item '${data.payload.cartItem.id.trim()}' doesn't exists on menu '${testMenu}'`
+								});
 							}
-						});
-					} else {
-						callback(400, {
-							Error: `The item '${data.payload.cartItem.id.trim()}' doesn't exists on menu '${testMenu}'`
-						});
-					}
+						} else {
+							callback(400, { Error: `The menu '${testMenu}' on item doesn't exists` });
+						}
+					});
 				} else {
-					callback(400, { Error: `The menu '${testMenu}' on item doesn't exists` });
+					callback(400, { Error: 'Cart Item content is missing' });
 				}
-			});
-		} else {
-			callback(400, { Error: 'Cart Item content is missing' });
-		}
+			} else {
+				callback(403, { Error: 'Missing required token in headers, or token is invalid' });
+			}
+		});
 	} else {
 		callback(400, { Error: 'Missing required inputs, or inputs are invalid' });
 	}
@@ -685,13 +683,12 @@ handlers._carts.get = function(data, callback) {
 	}
 };
 
-//TODO Carts - put
+// Carts - put
 // Required data: id , itemId, itemMenu, itemQuantity} (one must be sent)
 // Optional data: none
 handlers._carts.put = function(data, callback) {
 	// Check for the required field
 	const id = typeof data.payload.id == 'string' && data.payload.id.trim().length == 20 ? data.payload.id.trim() : false,
-		// Check for the optional fields
 		itemId =
 			typeof data.payload.itemId == 'string' && data.payload.itemId.trim().length > 0
 				? data.payload.itemId.trim()
@@ -700,82 +697,92 @@ handlers._carts.put = function(data, callback) {
 			typeof data.payload.itemMenu == 'string' && data.payload.itemMenu.trim().length > 0
 				? data.payload.itemMenu.trim()
 				: false,
-		itemHasQuantity =
-			typeof data.payload.itemQuantity == 'number' && data.payload.itemQuantity % 1 === 0 ? true : false;
+		itemQuantity =
+			typeof data.payload.itemQuantity == 'number' && data.payload.itemQuantity % 1 === 0
+				? data.payload.itemQuantity
+				: false;
 
 	//Check to make sure the id is valid
-	if (id && itemId && itemMenu && itemHasQuantity) {
+	if (id && itemId && itemMenu && itemQuantity) {
+		//Check menu file exits
 		// Lookup the menu
-		_data.read('menus', itemMenu, function(err, data) {
-			if (!err && data) {
-				// Remove the hashed password from the user object before returning it to the requester
-				delete data.hashedPassword;
-				// If an item was declared, look at the item, if not, look at the menu instead
-				if (itemKey) {
-					// Check if the declared item key exists
-					item = data[itemKey] ? data[itemKey] : false;
-					if (item) {
-						callback(200, item);
-					} else {
-						callback(404);
-					}
-				} else {
-					callback(200, data);
-				}
-			} else {
-				callback(400, { Error: "Menu doesn't exist" });
-			}
-		});
-
-		//Check to make sure one or more optional fields has been sent
-
-		item = data[itemKey] ? data[itemKey] : false;
-		if (protocol) {
-			// Lookup the cart
-			_data.read('carts', id, function(err, cartData) {
-				if (!err && cartData) {
-					// Get the token from the headers
-					const token = typeof data.headers.token == 'string' ? data.headers.token : false;
-
-					// Verify if the given token is valid and belongs to the user who created the cart
-					handlers._tokens.verifyToken(token, cartData.userEmail, function(tokenIsValid) {
-						if (tokenIsValid) {
-							// Update the cart where necessary
-							if (protocol) {
-								cartData.protocol = protocol;
-							}
-							if (url) {
-								cartData.url = url;
-							}
-							if (method) {
-								cartData.method = method;
-							}
-							if (successCodes) {
-								cartData.successCodes = successCodes;
-							}
-							if (timeoutSeconds) {
-								cartData.timeoutSeconds = timeoutSeconds;
-							}
-
-							// Store the new updates
-							_data.update('carts', id, cartData, function(err) {
-								if (!err) {
-									callback(200);
+		_data.read('menus', itemMenu, function(err, menuData) {
+			if (!err && menuData) {
+				// Check if the declared item key exists
+				item = menuData[itemId] ? menuData[itemId] : false;
+				if (item) {
+					// Lookup the cart
+					_data.read('carts', id, function(err, cartData) {
+						if (!err && cartData) {
+							// Get the token from the headers
+							const token = typeof data.headers.token == 'string' ? data.headers.token : false;
+							// Verify if the given token is valid and belongs to the user who created the cart
+							handlers._tokens.verifyToken(token, cartData.userEmail, function(tokenIsValid) {
+								if (tokenIsValid) {
+									// Validate update
+									let update;
+									// Check if object exists in the cart
+									if (itemId in cartData.items) {
+										// Update the item in the cart
+										const newItemQuantity = itemQuantity + cartData.items[itemId].itemQuantity;
+										if (newItemQuantity > 0) {
+											// Update the item quantity
+											cartData.items[itemId].itemQuantity = newItemQuantity;
+											update = true;
+										} else if (newItemQuantity === 0) {
+											// Remove the item from the cart
+											delete cartData.items[itemId];
+											update = true;
+										}
+									} else {
+										// New item should have a positive quantity
+										if (itemQuantity > 0) {
+											//Create new item
+											const newCartItem = {
+												itemId: itemId,
+												itemMenu: itemMenu,
+												itemQuantity: itemQuantity
+											};
+											// Add new Item to the cart
+											cartData.items[itemId] = newCartItem;
+											update = true;
+										}
+									}
+									// Store the new updates
+									if (update) {
+										_data.update('carts', id, cartData, function(err) {
+											if (!err) {
+												callback(200);
+											} else {
+												callback(500, { Error: 'Could not update the cart' });
+											}
+										});
+									} else {
+										callback(400, {
+											Error: `The item quantity of '${itemQuantity}' is invalid'`
+										});
+									}
 								} else {
-									callback(500, { Error: 'Could not update the cart' });
+									callback(403, {
+										Error: 'Missing required token in headers, or token is invalid'
+									});
 								}
 							});
 						} else {
-							callback(403);
+							callback(404, {
+								Error: `Could not find the cart`
+							});
 						}
 					});
 				} else {
-					callback(400, { Error: 'Cart ID did not exist' });
+					callback(400, {
+						Error: `The item '${itemId}' doesn't exists on menu '${itemMenu}'`
+					});
 				}
-			});
-		} else {
-			callback(400, { Error: 'Missing missing fields to update' });
-		}
+			} else {
+				callback(400, { Error: `The menu '${itemMenu}' on item doesn't exists` });
+			}
+		});
 	} else {
 		callback(400, { Error: 'Missing required field' });
 	}
