@@ -228,7 +228,7 @@ handlers._users.delete = function(data, callback) {
 					if (!err && userData) {
 						_data.delete('users', email, function(err) {
 							if (!err) {
-								// Delete each of the carts associated with the user // TODO Update to cart
+								// Delete each of the carts associated with the user
 								const userCarts =
 										typeof userData.carts == 'object' && userData.carts instanceof Array ? userData.carts : [],
 									cartsToDelete = userCarts.length;
@@ -588,9 +588,9 @@ handlers._carts.post = function(data, callback) {
 														userEmail: userEmail,
 														items: {
 															[cartItem.id]: {
-																quantity: cartItem.quantity,
-																id: cartItem.id,
-																menu: cartItem.menu
+																itemId: cartItem.id,
+																itemMenu: cartItem.menu,
+																itemQuantity: cartItem.quantity
 															}
 														}
 													};
