@@ -547,6 +547,7 @@ handlers._carts.post = function(data, callback) {
 			typeof data.payload.cartItem.menu == 'string' &&
 			data.payload.cartItem.menu.trim().length > 0 &&
 			typeof data.payload.cartItem.quantity == 'number' &&
+			data.payload.cartItem.quantity % 1 === 0 &&
 			data.payload.cartItem.quantity > 0
 				? data.payload.cartItem
 				: false;
@@ -566,63 +567,71 @@ handlers._carts.post = function(data, callback) {
 					if (itemOnMenu) {
 						// Get the token from the headers
 						const token = typeof data.headers.token == 'string' ? data.headers.token : false;
+						// Verify if the given token is valid for the email
+						handlers._tokens.verifyToken(token, email, function(tokenIsValid) {
+							if (tokenIsValid) {
+								// Lookup the user by reading the token
+								_data.read('tokens', token, function(err, tokenData) {
+									if (!err && tokenData) {
+										const userEmail = tokenData.email;
+										// Look up the user data
+										_data.read('users', userEmail, function(err, userData) {
+											if (!err && userData) {
+												const userCarts =
+													typeof userData.carts == 'object' && userData.carts instanceof Array ? userData.carts : [];
+												// Verify if the user has less than the number of max-carts-per-user
+												if (userCarts.length < config.maxCarts) {
+													// Create a random id for the cart
+													const cartId = helpers.createRandomString(20);
 
-						// Lookup the user by reading the token
-						_data.read('tokens', token, function(err, tokenData) {
-							if (!err && tokenData) {
-								const userEmail = tokenData.email;
-								// Look up the user data
-								_data.read('users', userEmail, function(err, userData) {
-									if (!err && userData) {
-										const userCarts =
-											typeof userData.carts == 'object' && userData.carts instanceof Array ? userData.carts : [];
-										// Verify if the user has less than the number of max-carts-per-user
-										if (userCarts.length < config.maxCarts) {
-											// Create a random id for the cart
-											const cartId = helpers.createRandomString(20);
+													// Create the cart object, and include the users email
+													const cartObject = {
+														id: cartId,
+														userEmail: userEmail,
+														items: {
+															[cartItem.id]: {
+																quantity: cartItem.quantity,
+																id: cartItem.id,
+																menu: cartItem.menu
+															}
+														}
+													};
 
-											// Create the cart object, and include the users email
-											const cartObject = {
-												id: cartId,
-												userEmail: userEmail,
-												items: {
-													[cartItem.id]: {
-														quantity: cartItem.quantity,
-														id: cartItem.id,
-														menu: cartItem.menu
-													}
-												}
-											};
-
-											// Save the object
-											_data.create('carts', cartId, cartObject, function(err) {
-												if (!err) {
-													// Add the cart to the user's object
-													userData.carts = userCarts;
-													userData.carts.push(cartId);
-
-													// Save the new user data
-													_data.update('users', userEmail, userData, function(err) {
+													// Save the object
+													_data.create('carts', cartId, cartObject, function(err) {
 														if (!err) {
-															//Return the data about the new cart
-															callback(200, cartObject);
+															// Add the cart to the user's object
+															userData.carts = userCarts;
+															userData.carts.push(cartId);
+
+															// Save the new user data
+															_data.update('users', userEmail, userData, function(err) {
+																if (!err) {
+																	//Return the data about the new cart
+																	callback(200, cartObject);
+																} else {
+																	callback(500, { Error: 'Could not update the user with the new cart' });
+																}
+															});
 														} else {
-															callback(500, { Error: 'Could not update the user with the new cart' });
+															callback(500, { Error: 'Could not create the new cart' });
 														}
 													});
 												} else {
-													callback(500, { Error: 'Could not create the new cart' });
+													callback(400, {
+														Error: `The user already have the maximum number of carts ${config.maxCarts}`
+													});
 												}
-											});
-										} else {
-											callback(400, { Error: `The user already have the maximum number of carts ${config.maxCarts}` });
-										}
+											} else {
+												callback(403);
+											}
+										});
 									} else {
 										callback(403);
 									}
 								});
 							} else {
-								callback(403);
+								callback(403, { Error: 'Missing required token in headers, or token is invalid' });
 							}
 						});
 					} else {
@@ -677,39 +686,51 @@ handlers._carts.get = function(data, callback) {
 };
 
 //TODO Carts - put
-// Required data: id
-// Optional data: protocol, url, method, successCodes, timeoutSeconds (one must be sent)
+// Required data: id , itemId, itemMenu, itemQuantity} (one must be sent)
+// Optional data: none
 handlers._carts.put = function(data, callback) {
 	// Check for the required field
-	const id = typeof data.payload.id == 'string' && data.payload.id.trim().length == 20 ? data.payload.id.trim() : false;
-	// Check for the optional fields
-	const protocol =
-			typeof data.payload.protocol == 'string' && [ 'https', 'http' ].indexOf(data.payload.protocol) > -1
-				? data.payload.protocol
+	const id = typeof data.payload.id == 'string' && data.payload.id.trim().length == 20 ? data.payload.id.trim() : false,
+		// Check for the optional fields
+		itemId =
+			typeof data.payload.itemId == 'string' && data.payload.itemId.trim().length > 0
+				? data.payload.itemId.trim()
 				: false,
-		url = typeof data.payload.url == 'string' && data.payload.url.trim().length > 0 ? data.payload.url.trim() : false,
-		method =
-			typeof data.payload.method == 'string' && [ 'post', 'get', 'put', 'delete' ].indexOf(data.payload.method) > -1
-				? data.payload.method
+		itemMenu =
+			typeof data.payload.itemMenu == 'string' && data.payload.itemMenu.trim().length > 0
+				? data.payload.itemMenu.trim()
 				: false,
-		successCodes =
-			typeof data.payload.successCodes == 'object' &&
-			data.payload.successCodes instanceof Array &&
-			data.payload.successCodes.length > 0
-				? data.payload.successCodes
-				: false,
-		timeoutSeconds =
-			typeof data.payload.timeoutSeconds == 'number' &&
-			data.payload.timeoutSeconds % 1 === 0 &&
-			data.payload.timeoutSeconds >= 1 &&
-			data.payload.timeoutSeconds <= 5
-				? data.payload.timeoutSeconds
-				: false;
+		itemHasQuantity =
+			typeof data.payload.itemQuantity == 'number' && data.payload.itemQuantity % 1 === 0 ? true : false;
 
 	//Check to make sure the id is valid
-	if (id) {
+	if (id && itemId && itemMenu && itemHasQuantity) {
+		// Lookup the menu
+		_data.read('menus', itemMenu, function(err, data) {
+			if (!err && data) {
+				// Remove the hashed password from the user object before returning it to the requester
+				delete data.hashedPassword;
+				// If an item was declared, look at the item, if not, look at the menu instead
+				if (itemKey) {
+					// Check if the declared item key exists
+					item = data[itemKey] ? data[itemKey] : false;
+					if (item) {
+						callback(200, item);
+					} else {
+						callback(404);
+					}
+				} else {
+					callback(200, data);
+				}
+			} else {
+				callback(400, { Error: "Menu doesn't exist" });
+			}
+		});
+
 		//Check to make sure one or more optional fields has been sent
-		if (protocol || url || method || successCodes || timeoutSeconds) {
+
+		item = data[itemKey] ? data[itemKey] : false;
+		if (protocol) {
 			// Lookup the cart
 			_data.read('carts', id, function(err, cartData) {
 				if (!err && cartData) {
