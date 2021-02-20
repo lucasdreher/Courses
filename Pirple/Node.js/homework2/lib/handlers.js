@@ -75,7 +75,6 @@ handlers._users.post = function(data, callback) {
 						if (!err) {
 							callback(200);
 						} else {
-							console.log(err);
 							callback(500, { Error: 'Could not create the new user' });
 						}
 					});
@@ -188,7 +187,6 @@ handlers._users.put = function(data, callback) {
 								if (!err) {
 									callback(200);
 								} else {
-									console.log(err);
 									callback(500, { Error: 'Could not update the user' });
 								}
 							});

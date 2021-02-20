@@ -105,7 +105,8 @@ server.router = {
 	users: handlers.users,
 	tokens: handlers.tokens,
 	menus: handlers.menus,
-	carts: handlers.carts
+	carts: handlers.carts,
+	orders: handlers.orders
 };
 
 // Init script
